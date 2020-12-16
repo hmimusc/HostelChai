@@ -242,7 +242,7 @@ def add_hostel_page(request):
 
 
 def add_hostel(request):
-    #feteching data from frontend
+    #receiving data from frontend
     name = request.POST.get('name')
     thana = request.POST.get('thana')
     postal_code = request.POST.get('postal_code')
@@ -259,7 +259,7 @@ def add_hostel(request):
     cursor.execute(command)
     data = cursor.fetchall()
 
-    #new hostel id
+    #generating new hostel id
     hostel_id = f'HOS-{str(data[0][0]+1)}'
 
     #feteching hostel owner name from session
