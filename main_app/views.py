@@ -1,28 +1,30 @@
-from django.shortcuts import render
 from my_modules import page_works, exceptions
+from django.shortcuts import render
 from django.db import connection
+from pathlib import Path
 import datetime
+import os
 
 cursor = connection.cursor()
+
+base_dir = Path('__file__').resolve().parent.parent
+text_files_dir = os.path.join(base_dir, 'text_files')
 # Create your views here.
 
 
 def test_page(request):
 
-    login_status = True
-
-    try:
-        page_works.request_verify(request, True)
-    except exceptions.LoginRequiredException:
-        login_status = False
+    data_dict = {
+        'page_name': 'test_page',
+    }
 
     user_dict = page_works.get_active_user(request)
 
-    data_dict = {
-        'user_type': user_dict['user_type'],
-        'page_name': 'test_page',
-        'login_status': login_status,
-    }
+    try:
+        data_dict['user_type'] = user_dict['user_type']
+        data_dict['login_status'] = 'true'
+    except KeyError:
+        data_dict['login_status'] = 'false'
 
     return render(request, 'main_app/test_page.html', context=data_dict)
 
@@ -212,4 +214,32 @@ def hostel_owner_home_page(request):
 
 
 def add_hostel_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['name'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'hostel_owner_home_page',
+        'login_status': 'true',
+    }
+
+    file = open(text_files_dir + '\\thanas.txt', 'r')
+
+    thanas = file.readlines()
+
+    file.close()
+
+    data_dict['thanas'] = thanas
+
+    return render(request, 'main_app/add_hostel_page.html', context=data_dict)
+
+
+def add_hostel(request):
     pass

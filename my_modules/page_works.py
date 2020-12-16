@@ -55,7 +55,10 @@ def get_active_user(request):
         "WHERE session_id={}".format(session_id)
     )
     cursor.execute(command)
-    query_target = cursor.fetchall()[0][0]
+    try:
+        query_target = cursor.fetchall()[0][0]
+    except IndexError:
+        return {}
 
     command = f"SELECT name, username FROM user WHERE id LIKE '{query_target}'"
     cursor.execute(command)
