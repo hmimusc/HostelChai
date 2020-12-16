@@ -8,19 +8,17 @@
     {% endblock %}
 
     {% block my_stylesheet %}
-        <link rel="stylesheet" href="{% static "main_app/stylesheets/home_page.css" %}">
+        <link rel="stylesheet" href="{% static "main_app/stylesheets/landing_page.css" %}">
     {% endblock %}
 
     {% block my_js %}
-        <script src="{% static "main_app/js/home_page.js" %}"></script>
+        <script src="{% static "main_app/js/landing_page.js" %}"></script>
     {% endblock %}
 
     {% block main_block %}
 
-        <div class="jumbotron header_layer_1">
-            <div class="jumbotron header_layer_2">
-                <h1 class="text text-center">Welcome to <span id="brand">HOSTEL CHAI ?</span></h1>
-            </div>
+        <div class="jumbotron">
+            <h1 class="text text-center">Welcome to <span id="brand">HOSTEL CHAI ?</span></h1>
         </div>
 
         <div class="row">
@@ -40,7 +38,7 @@
                             <div class="input-group">
                                 <input class="form-control" type="text" name="search_keywords">
                                 <div class="input-group-append">
-                                    <input class="form-control btn my_btn" type="submit" value="Search">
+                                    <input class="form-control btn btn-outline-success" type="submit" value="Search">
                                 </div>
                             </div>
                         </form>
@@ -57,7 +55,7 @@
                                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                         </p>
                         <br>
-                        <a class="btn my_btn btn-block" href="#">Register to Post</a>
+                        <a class="btn btn-secondary btn-block" href="#">Register to Post</a>
                     </div>
                 </div>
             </div>
@@ -71,7 +69,7 @@
 
                     </div>
                     <div class="col-2">
-                        <a class="btn my_btn btn-block" href="#">Register</a>
+                        <a class="btn btn-primary btn-block" href="#">Register</a>
                     </div>
                     <div class="col-5">
 

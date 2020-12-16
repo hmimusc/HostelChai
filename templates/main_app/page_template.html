@@ -13,16 +13,21 @@
 
     <body>
 
-        <nav class="navbar navbar-expand fixed-top">
+        <nav class="navbar navbar-expand fixed-top navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="#"><b>HOSTEL CHAI ?</b></a>
+                <a class="navbar-brand" href="{% url 'main_app:landing_page' %}"><b>HOSTEL CHAI ?</b></a>
 
-                <ul class="navbar-nav justify-content-start">
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>
                 </ul>
 
                 <ul class="navbar-nav justify-content-end">
-                    <li class="nav-item"><a class="nav-link" href="#">Sign In</a></li>
+                    {% if login_status == "false" %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:login_page' %}">Sign In</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:logout' %}">Logout</a></li>
+                    {% endif %}
+
                 </ul>
             </div>
         </nav>

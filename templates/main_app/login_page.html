@@ -1,0 +1,42 @@
+{% extends 'main_app/page_template.html' %}
+
+    {% load static %}
+
+    {% block title %}
+        Hostel Chai ?
+    {% endblock %}
+
+    {% block additions %}
+
+    {% endblock %}
+
+    {% block my_stylesheet %}
+        <link rel="stylesheet" href="{% static 'main_app/css/login_page.css' %}">
+    {% endblock %}
+
+    {% block my_script %}
+        <script src="{% static 'main_app/js/login_page.js' %}"></script>
+    {% endblock %}
+
+    {% block main_block %}
+
+        <div class="jumbotron">
+                <h1 align="center">Login</h1>
+        </div>
+
+        <div class="jumbotron">
+
+            <form class="form-group" action="{% url 'main_app:login' %}" method="post">
+                {% csrf_token %}
+
+                <p><input class="form-control" id="username" name="username" type="text" value="{{ username }}" placeholder="Username" required></p>
+                <p><input class="form-control" id="password" name="password" type="password" placeholder="Password" required></p>
+
+                <br>
+
+                <input class="btn btn-primary btn-block " id="submit" type="submit" value="Login">
+            </form>
+        </div>
+
+
+    {% endblock %}
