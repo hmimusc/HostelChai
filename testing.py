@@ -1,1 +1,0 @@
-print('semi-final-test')
