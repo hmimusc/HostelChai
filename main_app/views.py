@@ -57,6 +57,7 @@ def login(request):
 
     if password_verified:
 
+
         command = (
             "SELECT name FROM user " +
             "WHERE username LIKE '{}'".format(username)
