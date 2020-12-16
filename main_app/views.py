@@ -9,3 +9,7 @@ def home_page(request):
 
 def test_page(request):
     return render(request, 'main_app/test_page.html', context={})
+
+
+def serve_test_page(request):
+    return render(request, 'main_app/test_page.html', context={})
