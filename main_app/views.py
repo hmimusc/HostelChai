@@ -8,7 +8,23 @@ cursor = connection.cursor()
 
 
 def test_page(request):
-    return render(request, 'main_app/test_page.html', context={})
+
+    login_status = True
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        login_status = False
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_type': user_dict['user_type'],
+        'page_name': 'test_page',
+        'login_status': login_status,
+    }
+
+    return render(request, 'main_app/test_page.html', context=data_dict)
 
 
 def login_page(request):
