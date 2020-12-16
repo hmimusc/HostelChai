@@ -1,4 +1,4 @@
-/*.login_card{*/
-/*    margin-left: 300px;*/
-/*    margin-right: 300px;*/
-/*}*/
+.login_card{
+    padding-top: 32px;
+    padding-bottom: 16px;
+}

@@ -193,3 +193,7 @@ def hostel_owner_home_page(request):
     }
 
     return render(request, 'main_app/hostel_owner_home_page.html', context=data_dict)
+
+
+def add_hostel_page(request):
+    pass

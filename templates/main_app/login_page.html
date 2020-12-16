@@ -20,23 +20,32 @@
 
     {% block main_block %}
 
-        <div class="jumbotron">
-                <h1 align="center">Login</h1>
+        <div class="jumbotron text-dark bg-secondary">
+            <h1 class="text-center header" align="center">Login</h1>
         </div>
 
-        <div class="jumbotron">
+        <div class="row">
+            <div class="col-3">
 
-            <form class="form-group" action="{% url 'main_app:login' %}" method="post">
-                {% csrf_token %}
+            </div>
+            <div class="col-6">
+                <div class="jumbotron bg-dark login_card">
 
-                <p><input class="form-control" id="username" name="username" type="text" value="{{ username }}" placeholder="Username" required></p>
-                <p><input class="form-control" id="password" name="password" type="password" placeholder="Password" required></p>
+                    <form class="form-group" action="{% url 'main_app:login' %}" method="post">
+                        {% csrf_token %}
 
-                <br>
+                        <p><input class="form-control" id="username" name="username" type="text" value="{{ username }}" placeholder="Username" required></p>
+                        <p><input class="form-control" id="password" name="password" type="password" placeholder="Password" required></p>
 
-                <input class="btn btn-primary btn-block " id="submit" type="submit" value="Login">
-            </form>
+                        <br>
+
+                        <input class="btn btn-outline-success btn-block" id="submit" type="submit" value="Login">
+                    </form>
+                </div>
+            </div>
+            <div class="col-3">
+
+            </div>
         </div>
-
 
     {% endblock %}

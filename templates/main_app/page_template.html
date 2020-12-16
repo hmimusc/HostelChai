@@ -18,6 +18,16 @@
                 <a class="navbar-brand" href="{% url 'main_app:landing_page' %}"><b>HOSTEL CHAI ?</b></a>
 
                 <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Feed</a></li>
+
+                    {% if user_type == 'H' %}
+                        <li class="nav-item"><a class="nav-link" href="#">Add Hostel</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Post ad.</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#">Manage ads.</a></li>
+                    {% elif user_type == 'S' %}
+                        <li class="nav-item"><a class="nav-link" href="#">Find a Hostel</a></li>
+                    {% endif %}
+
                     <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>
                 </ul>
 

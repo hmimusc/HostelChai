@@ -11,5 +11,6 @@ urlpatterns = [
     path('home_page/', views.home_page, name='home_page'),
     path('student_home_page/', views.student_home_page, name='student_home_page'),
     path('hostel_owner_home_page/', views.hostel_owner_home_page, name='hostel_owner_home_page'),
+    path('add_hostel_page/', views.add_hostel_page, name='add_hostel_page'),
     path('test_page/', views.test_page, name='test_page'),
 ]
