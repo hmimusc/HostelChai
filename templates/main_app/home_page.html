@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% extends "main_app/page_template.html" %}
+
+    {% load static %}
+
+    {% block title %}
+        Hostel Chai ?
+    {% endblock %}
+
+    {% block my_stylesheet %}
+        <link rel="stylesheet" href="{% static "main_app/stylesheets/home_page.css" %}">
+    {% endblock %}
+
+    {% block my_js %}
+        <script src="{% static "main_app/js/home_page.js" %}"></script>
+    {% endblock %}
+
+    {% block main_block %}
+
+        <div class="jumbotron header_layer_1">
+            <div class="jumbotron header_layer_2">
+                <h1 class="text text-center">Welcome to <span id="brand">HOSTEL CHAI ?</span></h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card text-basic">
+                    <div class="card-body">
+                        <h2 class="card-title text-center">Need a Hostel ?</h2>
+                        <br>
+                        <p class="card-text text-center">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+
+                        <form class="form-group" action="#" method="post">
+                            {% csrf_token %}
+
+                            <br>
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="search_keywords">
+                                <div class="input-group-append">
+                                    <input class="form-control btn my_btn" type="submit" value="Search">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-basic">
+                    <div class="card-body">
+{#                        <h2 class="card-title text-center">Hostel Owner</h2>#}
+                        <p class="card-text text-center">
+                               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                               Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        </p>
+                        <br>
+                        <a class="btn my_btn btn-block" href="#">Register to Post</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="jumbotron">
+            <h2 class="text-center">New to this website ?</h2>
+            <p>
+                <div class="row">
+                    <div class="col-5">
+
+                    </div>
+                    <div class="col-2">
+                        <a class="btn my_btn btn-block" href="#">Register</a>
+                    </div>
+                    <div class="col-5">
+
+                    </div>
+                </div>
+            </p>
+        </div>
+
+    {% endblock %}

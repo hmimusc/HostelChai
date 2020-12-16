@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html>
+    <head>
+        <title>
+            {% block title %}{% endblock %}
+        </title>
+        <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+        <link rel="stylesheet" href="{% static "main_app/css/page_template.css" %}">
+        {% block my_stylesheet %}{% endblock %}
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-expand fixed-top">
+            <div class="container">
+                <a class="navbar-brand" href="#"><b>HOSTEL CHAI ?</b></a>
+
+                <ul class="navbar-nav justify-content-start">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>
+                </ul>
+
+                <ul class="navbar-nav justify-content-end">
+                    <li class="nav-item"><a class="nav-link" href="#">Sign In</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <style>._nav_setup{margin-bottom: 58px}</style>
+        <div class="_nav_setup"></div>
+
+        <div class="container">
+            <style>
+                body {
+                    background-image: url("{% static 'main_app/img/background-4.jpg' %}");
+                    background-size: cover;
+                }
+            </style>
+            {% block main_block %}{% endblock %}
+        </div>
+
+        <script src="{% static "jquery/jquery-3.5.1.min.js" %}"></script>
+        <script src="{% static "bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+        {% block my_js %}{% endblock %}
+    </body>
+</html>
