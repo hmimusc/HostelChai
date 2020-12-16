@@ -21,7 +21,7 @@
         </div>
 
         <div class="jumbotron jumbotron_suffix bg-dark">
-            <form class="form-group" action="{% url 'main_app:add_hostel' %}">
+            <form class="form-group" action="{% url 'main_app:add_hostel' %}" method='post'>
                 {% csrf_token %}
 
                 <p>
