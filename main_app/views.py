@@ -242,4 +242,39 @@ def add_hostel_page(request):
 
 
 def add_hostel(request):
-    pass
+    #feteching data from frontend
+    name = request.POST.get('name')
+    thana = request.POST.get('thana')
+    postal_code = request.POST.get('postal_code')
+    house_no = request.POST.get('house_no')
+    road_no = request.POST.get('road_no')
+    electricity_bil = request.POST.get('electricity_bill')
+    other_valid_doc = request.POST.get('other_valid_doc')
+    image = request.POST.get('image')
+
+    #print(f'{name} {thana} {postal_code} {house_no} {road_no} {electricity_bil} {other_valid_doc} {image}')
+
+    #fetching number of hostel from hostel table
+    command = f'SELECT COUNT(*) FROM hostel'
+    cursor.execute(command)
+    data = cursor.fetchall()
+
+    #new hostel id
+    hostel_id = f'HOS-{str(data[0][0]+1)}'
+
+    #feteching hostel owner name from session
+    hostel_owner_username = page_works.get_active_user(request)['username']
+
+    #fetecing hostel owner id
+    command = f'SELECT user.id FROM user WHERE user.username = "{hostel_owner_username}"'
+    cursor.execute(command)
+    hostel_owner_id = cursor.fetchall()[0][0]
+
+    #inserting data in hostel table
+    command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bil}", "{other_valid_doc}", "{image}", 0, 1)'
+
+    # print(hostel_id)
+    # print(hostel_owner_username)
+    # print(command)
+    cursor.execute(command)
+    return hostel_owner_home_page(request)
