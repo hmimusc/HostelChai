@@ -21,7 +21,7 @@
         </div>
 
         <div class="jumbotron jumbotron_suffix bg-dark">
-            <form class="form-group" action="{% url 'main_app:add_hostel' %}" method='post'>
+            <form class="form-group" action="{% url 'main_app:add_hostel' %}" method='post' enctype='multipart/form-data'>
                 {% csrf_token %}
 
                 <p>
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="custom-file">
-                            <input class="custom-file-input" id="electricity_bill" type="file" name="electricity_bill">
+                            <input class="custom-file-input" id="electricity_bill" type="file" name="electricity_bill" required>
                             <label class="custom-file-label bg_custom" for="electricity_bill">Choose file</label>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="custom-file">
-                            <input class="custom-file-input" id="other_valid_doc" type="file" name="other_valid_doc">
+                            <input class="custom-file-input" id="other_valid_doc" type="file" name="other_valid_doc" required>
                             <label class="custom-file-label bg_custom" for="other_valid_doc">Choose file</label>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="custom-file">
-                            <input class="custom-file-input" id="image" type="file" name="image">
+                            <input class="custom-file-input" id="image" type="file" name="image" required>
                             <label class="custom-file-label bg_custom" for="electricity_bill">Choose file</label>
                         </div>
                     </div>

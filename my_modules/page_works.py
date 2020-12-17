@@ -60,12 +60,13 @@ def get_active_user(request):
     except IndexError:
         return {}
 
-    command = f"SELECT name, username FROM user WHERE id LIKE '{query_target}'"
+    command = f"SELECT name, username, id FROM user WHERE id LIKE '{query_target}'"
     cursor.execute(command)
 
-    name, username = cursor.fetchall()[0]
+    name, username, userid = cursor.fetchall()[0]
 
     user_data = {
+        'userid': userid,
         'username': username,
         'user_type': query_target.split('-')[0],
         'name': name,

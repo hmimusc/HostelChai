@@ -2,6 +2,7 @@ from my_modules import page_works, exceptions
 from django.shortcuts import render
 from django.db import connection
 from pathlib import Path
+from PIL import Image
 import datetime
 import os
 
@@ -9,6 +10,9 @@ cursor = connection.cursor()
 
 base_dir = Path('__file__').resolve().parent.parent
 text_files_dir = os.path.join(base_dir, 'text_files')
+temp_files_dir = os.path.join(base_dir, 'temp_files')
+media_files_dir = os.path.join(base_dir, 'media')
+main_app_media_dir = os.path.join(media_files_dir, 'main_app')
 # Create your views here.
 
 
@@ -248,33 +252,38 @@ def add_hostel(request):
     postal_code = request.POST.get('postal_code')
     house_no = request.POST.get('house_no')
     road_no = request.POST.get('road_no')
-    electricity_bil = request.POST.get('electricity_bill')
-    other_valid_doc = request.POST.get('other_valid_doc')
-    image = request.POST.get('image')
 
-    #print(f'{name} {thana} {postal_code} {house_no} {road_no} {electricity_bil} {other_valid_doc} {image}')
+    if 'electricity_bill' in request.FILES:
+        image_electricity_bill = Image.open(request.FILES['electricity_bill'])
+    if 'other_valid_doc' in request.FILES:
+        image_other_valid_doc = Image.open(request.FILES['other_valid_doc'])
+    if 'image' in request.FILES:
+        image_hostel_image = Image.open(request.FILES['image'])
 
-    #fetching number of hostel from hostel table
+    # fetching number of hostel from hostel table
     command = f'SELECT COUNT(*) FROM hostel'
     cursor.execute(command)
     data = cursor.fetchall()
 
-    #generating new hostel id
+    # generating new hostel id
     hostel_id = f'HOS-{str(data[0][0]+1)}'
 
-    #feteching hostel owner name from session
-    hostel_owner_username = page_works.get_active_user(request)['username']
+    # feteching hostel owner id from session
+    hostel_owner_id = page_works.get_active_user(request)['userid']
 
-    #fetecing hostel owner id
-    command = f'SELECT user.id FROM user WHERE user.username = "{hostel_owner_username}"'
+    # generalizing filenames
+    electricity_bill_filename = f'{hostel_owner_id}_{hostel_id}_electbill.png'
+    other_valid_doc_filename = f'{hostel_owner_id}_{hostel_id}_validdoc.png'
+    hostel_image_filename = f'{hostel_owner_id}_{hostel_id}_image.png'
+
+    # inserting data in hostel table
+    command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bill_filename}", "{other_valid_doc_filename}", "{hostel_image_filename}", 0, 0)'
     cursor.execute(command)
-    hostel_owner_id = cursor.fetchall()[0][0]
 
-    #inserting data in hostel table
-    command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bil}", "{other_valid_doc}", "{image}", 0, 1)'
+    print(f'Paths: {electricity_bill_filename}, {other_valid_doc_filename},{hostel_image_filename}')
 
-    # print(hostel_id)
-    # print(hostel_owner_username)
-    # print(command)
-    cursor.execute(command)
+    image_electricity_bill.save(main_app_media_dir + '\\' + electricity_bill_filename)
+    image_other_valid_doc.save(main_app_media_dir + '\\' + other_valid_doc_filename)
+    image_hostel_image.save(main_app_media_dir + '\\' + hostel_image_filename)
+
     return hostel_owner_home_page(request)
