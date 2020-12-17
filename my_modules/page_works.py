@@ -45,6 +45,15 @@ def request_verify(request, login_required):
         return True
 
 
+def user_verify(request, required_user):
+    active_user_type = get_active_user(request)['user_type']
+
+    if required_user != active_user_type:
+        raise exceptions.UserRequirementException
+
+    return True
+
+
 def get_active_user(request):
 
     session_id = get_session_id(request)

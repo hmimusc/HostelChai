@@ -4,3 +4,7 @@ class LoginRequiredException(Exception):
 
 class LogoutRequiredException(Exception):
     pass
+
+
+class UserRequirementException(Exception):
+    pass

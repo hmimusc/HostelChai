@@ -33,6 +33,55 @@ def test_page(request):
     return render(request, 'main_app/test_page.html', context=data_dict)
 
 
+def setup_admin_page(request):
+    return render(request, 'main_app/setup_admin_page.html', context={})
+
+
+def setup_admin(request):
+
+    name = request.POST.get('name')
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    gender = request.POST.get('gender')
+    phone = request.POST.get('phone')
+    email = request.POST.get('email')
+    address = request.POST.get('address')
+
+    command = f'select count(*) from user where id like "A%"'
+    cursor.execute(command)
+    user_id = f'A-{cursor.fetchall()[0][0] + 1}'
+
+    command = f'insert into user values ("{user_id}", "{name}", "{username}", "{password}", "null", CURRENT_DATE , "null", "null", "{gender}", "{phone}", "{email}", "{address}", 1, 9)'
+    cursor.execute(command)
+
+    return login_page(request)
+
+
+def admin_hostel_loader_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_hostel_loader_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/admin_hostel_loader_page.html', context=data_dict)
+
+
 def login_page(request):
 
     data_dict = {
@@ -115,9 +164,14 @@ def login(request):
         if user == 'S':
             data_dict['page_name'] = 'student_home_page'
             response = render(request, 'main_app/student_home_page.html', context=data_dict)
-        else:
+        elif user == 'H':
             data_dict['page_name'] = 'hostel_owner_home_page'
             response = render(request, 'main_app/hostel_owner_home_page.html', context=data_dict)
+        elif user == 'A':
+            data_dict['page_name'] = 'admin_home_page'
+            response = render(request, 'main_app/admin_home_page.html', context=data_dict)
+        else:
+            return login_page(request)
 
         response.set_cookie('_login_session', cookie_content, expires=cookie_expires)
 
@@ -173,8 +227,37 @@ def home_page(request):
 
     if user_dict['user_type'] == 'S':
         return student_home_page(request)
-    else:
+    elif user_dict['user_type'] == 'H':
         return hostel_owner_home_page(request)
+    elif user_dict['user_type'] == 'A':
+        return admin_home_page(request)
+    else:
+        return landing_page() # fix needed
+
+
+def admin_home_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/admin_home_page.html', context=data_dict)
 
 
 def student_home_page(request):
@@ -184,11 +267,16 @@ def student_home_page(request):
     except exceptions.LoginRequiredException:
         return login_page(request)
 
+    try:
+        page_works.user_verify(request, 'S')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'student_home_page',
         'login_status': 'true',
@@ -208,7 +296,7 @@ def hostel_owner_home_page(request):
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'hostel_owner_home_page',
         'login_status': 'true',
@@ -228,7 +316,7 @@ def add_hostel_page(request):
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'hostel_owner_home_page',
         'login_status': 'true',
@@ -246,6 +334,17 @@ def add_hostel_page(request):
 
 
 def add_hostel(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
     # receiving data from frontend
     name = request.POST.get('name')
     thana = request.POST.get('thana')
