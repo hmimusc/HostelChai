@@ -246,19 +246,16 @@ def add_hostel_page(request):
 
 
 def add_hostel(request):
-    #receiving data from frontend
+    # receiving data from frontend
     name = request.POST.get('name')
     thana = request.POST.get('thana')
     postal_code = request.POST.get('postal_code')
     house_no = request.POST.get('house_no')
     road_no = request.POST.get('road_no')
 
-    if 'electricity_bill' in request.FILES:
-        image_electricity_bill = Image.open(request.FILES['electricity_bill'])
-    if 'other_valid_doc' in request.FILES:
-        image_other_valid_doc = Image.open(request.FILES['other_valid_doc'])
-    if 'image' in request.FILES:
-        image_hostel_image = Image.open(request.FILES['image'])
+    image_electricity_bill = Image.open(request.FILES['electricity_bill'])
+    image_other_valid_doc = Image.open(request.FILES['other_valid_doc'])
+    image_hostel_image = Image.open(request.FILES['image'])
 
     # fetching number of hostel from hostel table
     command = f'SELECT COUNT(*) FROM hostel'
@@ -268,7 +265,7 @@ def add_hostel(request):
     # generating new hostel id
     hostel_id = f'HOS-{str(data[0][0]+1)}'
 
-    # feteching hostel owner id from session
+    # fetching hostel owner id from session
     hostel_owner_id = page_works.get_active_user(request)['userid']
 
     # generalizing filenames
