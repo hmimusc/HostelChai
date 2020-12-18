@@ -7,6 +7,16 @@
     padding-bottom: 16px;
 }
 
+.jumbotron_suffix_unified{
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+.jumbotron_suffix_inner{
+    padding: 16px;
+    padding-bottom: 16px;
+}
+
 /*.bg_custom{*/
 /*    background-color: #001a3e;*/
 /*    color: #ffffff;*/

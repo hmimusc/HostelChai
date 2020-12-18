@@ -9,6 +9,7 @@ import os
 cursor = connection.cursor()
 
 base_dir = Path('__file__').resolve().parent.parent
+static_files_dir = os.path.join(base_dir, 'statics')
 text_files_dir = os.path.join(base_dir, 'text_files')
 temp_files_dir = os.path.join(base_dir, 'temp_files')
 media_files_dir = os.path.join(base_dir, 'media')
@@ -29,6 +30,8 @@ def test_page(request):
         data_dict['login_status'] = 'true'
     except KeyError:
         data_dict['login_status'] = 'false'
+
+    data_dict['image'] = f'{main_app_media_dir}\\H-1_HOS-3_electbill.png'
 
     return render(request, 'main_app/test_page.html', context=data_dict)
 
@@ -57,6 +60,41 @@ def setup_admin(request):
     return login_page(request)
 
 
+def requests_loader_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_hostel_loader_page',
+        'login_status': 'true',
+    }
+
+    command = 'select hostel_id from hostel where verified=0'
+    cursor.execute(command)
+
+    hostels = cursor.fetchall()
+
+    hostels = [hostel[0] for hostel in hostels]
+
+    data_dict['hostels'] = hostels
+    data_dict['checked'] = ['', 'checked', '']
+
+    return render(request, 'main_app/requests_loader_page.html', context=data_dict)
+
+
 def admin_hostel_loader_page(request):
 
     try:
@@ -78,6 +116,15 @@ def admin_hostel_loader_page(request):
         'page_name': 'admin_hostel_loader_page',
         'login_status': 'true',
     }
+
+    command = 'select hostel_id from hostel where verified=0'
+    cursor.execute(command)
+
+    hostels = cursor.fetchall()
+
+    hostels = [hostel for hostel in hostels]
+
+    data_dict['hostels'] = hostels
 
     return render(request, 'main_app/admin_hostel_loader_page.html', context=data_dict)
 
@@ -171,7 +218,7 @@ def login(request):
             data_dict['page_name'] = 'admin_home_page'
             response = render(request, 'main_app/admin_home_page.html', context=data_dict)
         else:
-            return login_page(request)
+            return logout(request)
 
         response.set_cookie('_login_session', cookie_content, expires=cookie_expires)
 
@@ -232,7 +279,7 @@ def home_page(request):
     elif user_dict['user_type'] == 'A':
         return admin_home_page(request)
     else:
-        return landing_page() # fix needed
+        return logout(request)
 
 
 def admin_home_page(request):
@@ -378,8 +425,10 @@ def add_hostel(request):
 
     print(f'Paths: {electricity_bill_filename}, {other_valid_doc_filename},{hostel_image_filename}')
 
-    image_electricity_bill.save(main_app_media_dir + '\\' + electricity_bill_filename)
-    image_other_valid_doc.save(main_app_media_dir + '\\' + other_valid_doc_filename)
-    image_hostel_image.save(main_app_media_dir + '\\' + hostel_image_filename)
+    save_to = os.path.join(static_files_dir, 'media/main_app')
+
+    image_electricity_bill.save(save_to + '\\' + electricity_bill_filename)
+    image_other_valid_doc.save(save_to + '\\' + other_valid_doc_filename)
+    image_hostel_image.save(save_to + '\\' + hostel_image_filename)
 
     return hostel_owner_home_page(request)

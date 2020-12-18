@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 app_name = 'main_app'
@@ -7,6 +9,7 @@ urlpatterns = [
     path('', views.landing_page, name='landing_page'),
     path('setup_admin_page/', views.setup_admin_page, name='setup_admin_page'),
     path('setup_admin/', views.setup_admin, name='setup_admin'),
+    path('requests_loader_page/', views.requests_loader_page, name='requests_loader_page'),
     path('admin_hostel_loader_page/', views.admin_hostel_loader_page, name='admin_hostel_loader_page'),
     path('login_page/', views.login_page, name='login_page'),
     path('login/', views.login, name='login'),
@@ -19,3 +22,4 @@ urlpatterns = [
     path('add_hostel/', views.add_hostel, name='add_hostel'),
     path('test_page/', views.test_page, name='test_page'),
 ]
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
