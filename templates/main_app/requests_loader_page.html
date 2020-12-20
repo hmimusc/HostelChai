@@ -20,7 +20,7 @@
             <h1 class="text-center header">Load Requests</h1>
         </div>
 
-        <form class="form-group" action="#" method="post">
+        <form class="form-group" action="{% url 'main_app:requests_loader' %}" method="post">
             {% csrf_token %}
 
             <div class="jumbotron jumbotron_suffix_unified bg-dark">
@@ -34,7 +34,7 @@
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio_user" type="radio" name="req_type" {{ checked.0 }}>
+                                            <input class="custom-control-input" id="radio_user" type="radio" name="req_type" value="users" {{ checked.0 }}>
                                             <label class="custom-control-label" for="radio_user">Users :</label>
                                         </div>
                                     </div>
@@ -51,7 +51,7 @@
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio_hostel" type="radio" name="req_type" {{ checked.1 }}>
+                                            <input class="custom-control-input" id="radio_hostel" type="radio" name="req_type" value="hostels" {{ checked.1 }}>
                                             <label class="custom-control-label" for="radio_hostel">Hostels :</label>
                                         </div>
                                     </div>
@@ -68,7 +68,7 @@
                                 <div class="input-group-prepend">
                                     <div class="input-group-text">
                                         <div class="custom-control custom-radio">
-                                            <input class="custom-control-input" id="radio_ads" type="radio" name="req_type" {{ checked.2 }}>
+                                            <input class="custom-control-input" id="radio_ads" type="radio" name="req_type" value="ads" {{ checked.2 }}>
                                             <label class="custom-control-label" for="radio_ads">Advertisements :</label>
                                         </div>
                                     </div>
@@ -88,14 +88,4 @@
                 </div>
             </div>
         </form>
-
-{#        <div class="custom-control custom-radio">#}
-{#            <input type="radio" id="c1" name="customRadio" class="custom-control-input" value="1">#}
-{#            <label class="custom-control-label" for="c1">Toggle this custom radio</label>#}
-{#        </div>#}
-{#        <div class="custom-control custom-radio">#}
-{#            <input type="radio" id="c2" name="customRadio" class="custom-control-input" value="2">#}
-{#            <label class="custom-control-label" for="c2">Or toggle this other custom radio</label>#}
-{#        </div>#}
-
     {% endblock %}

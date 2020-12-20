@@ -1,4 +1,4 @@
-from my_modules import page_works, exceptions
+from my_modules import page_works, exceptions, classes
 from django.shortcuts import render
 from django.db import connection
 from pathlib import Path
@@ -95,7 +95,7 @@ def requests_loader_page(request):
     return render(request, 'main_app/requests_loader_page.html', context=data_dict)
 
 
-def admin_hostel_loader_page(request):
+def requests_loader(request):
 
     try:
         page_works.request_verify(request, True)
@@ -107,26 +107,82 @@ def admin_hostel_loader_page(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
+    req_type = request.POST.get('req_type')
+
+    # print(f'[+] req_type: {req_type}')
+
+    if req_type == 'hostels':
+        return hostel_loader_page(request)
+    else:
+        return home_page(request)
+
+
+def hostel_loader_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    if 'hostel_id' in request.POST:
+        hostel_id = request.POST.get('hostel_id')
+    else:
+        return requests_loader_page(request)
+
+    hostel = classes.Hostel()
+    hostel.load(hostel_id)
+
+    command = f'select name, phone_number from user where id like "{hostel.hostel_owner_id}"'
+    cursor.execute(command)
+
+    hostel_owner_name, phone_number = cursor.fetchall()[0]
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
-        'page_name': 'admin_hostel_loader_page',
+        'page_name': 'admin_home_page',
         'login_status': 'true',
+        'hostel_name': hostel.hostel_name,
+        'hostel_owner_name': hostel_owner_name,
+        'phone_number': phone_number,
+        'hostel_id': hostel.hostel_id,
+        'hostel_house_number': hostel.house_number,
+        'hostel_road_number': hostel.road_number,
+        'hostel_thana': hostel.thana,
+        'hostel_postal_code': hostel.postal_code,
+        'hostel_photo': f'{hostel.photo[0]}{hostel.photo[1]}',
+        'hostel_electricity_bill': f'{hostel.electricity_bill[0]}{hostel.electricity_bill[1]}',
+        'hostel_document': f'{hostel.hostel_document[0]}{hostel.hostel_document[1]}',
     }
 
-    command = 'select hostel_id from hostel where verified=0'
+    return render(request, 'main_app/hostel_loader_page.html', context=data_dict)
+
+
+def approve_hostel(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    hostel_id = request.POST.get('hostel_id')
+    command = f'update hostel set verified=1, active=1 where hostel_id like "{hostel_id}"'
     cursor.execute(command)
 
-    hostels = cursor.fetchall()
-
-    hostels = [hostel for hostel in hostels]
-
-    data_dict['hostels'] = hostels
-
-    return render(request, 'main_app/admin_hostel_loader_page.html', context=data_dict)
+    return hostel_owner_home_page(request)
 
 
 def login_page(request):
@@ -161,7 +217,10 @@ def login(request):
     command = f"select id, password from user where username like '{username}'"
     cursor.execute(command)
 
-    user_id, password = cursor.fetchall()[0]
+    try:
+        user_id, password = cursor.fetchall()[0]
+    except IndexError:
+        return login_page(request)
 
     user = user_id.split('-')[0]
 
