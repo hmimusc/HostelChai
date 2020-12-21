@@ -76,7 +76,7 @@
 
                         <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
                             <div class="card-body">
-                                <img class="card-img" src="{% static hostel_photo %}" alt="Not found !!!">
+                                <img class="card-img" src="{{ MEDIA_URL }}{{ hostel_photo }}" alt="Not found !!!">
                             </div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@
 
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
                             <div class="card-body">
-                                <img class="card-img" src="{% static hostel_electricity_bill %}" alt="Not found !!!">
+                                <img class="card-img" src="{{ MEDIA_URL }}{{ hostel_electricity_bill }}" alt="Not found !!!">
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
 
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
                             <div class="card-body">
-                                <img class="card-img-top" src="{% static hostel_document %}" alt="Not found !!!">
+                                <img class="card-img-top" src="{{ MEDIA_URL }}{{ hostel_document }}" alt="Not found !!!">
                              </div>
                         </div>
                     </div>

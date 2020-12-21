@@ -1,6 +1,7 @@
 from my_modules import page_works, exceptions, classes
 from django.shortcuts import render
 from django.db import connection
+from django.conf import settings
 from pathlib import Path
 from PIL import Image
 import datetime
@@ -9,11 +10,8 @@ import os
 cursor = connection.cursor()
 
 base_dir = Path('__file__').resolve().parent.parent
-static_files_dir = os.path.join(base_dir, 'statics')
 text_files_dir = os.path.join(base_dir, 'text_files')
 temp_files_dir = os.path.join(base_dir, 'temp_files')
-media_files_dir = os.path.join(base_dir, 'media')
-main_app_media_dir = os.path.join(media_files_dir, 'main_app')
 # Create your views here.
 
 
@@ -31,7 +29,7 @@ def test_page(request):
     except KeyError:
         data_dict['login_status'] = 'false'
 
-    data_dict['image'] = f'{main_app_media_dir}\\H-1_HOS-3_electbill.png'
+    data_dict['image'] = 'H-1_HOS-4_electbill.png'
 
     return render(request, 'main_app/test_page.html', context=data_dict)
 
@@ -158,9 +156,9 @@ def hostel_loader_page(request):
         'hostel_road_number': hostel.road_number,
         'hostel_thana': hostel.thana,
         'hostel_postal_code': hostel.postal_code,
-        'hostel_photo': f'{hostel.photo[0]}{hostel.photo[1]}',
-        'hostel_electricity_bill': f'{hostel.electricity_bill[0]}{hostel.electricity_bill[1]}',
-        'hostel_document': f'{hostel.hostel_document[0]}{hostel.hostel_document[1]}',
+        'hostel_photo': hostel.photo,
+        'hostel_electricity_bill': hostel.electricity_bill,
+        'hostel_document': hostel.hostel_document,
     }
 
     return render(request, 'main_app/hostel_loader_page.html', context=data_dict)
@@ -478,16 +476,12 @@ def add_hostel(request):
     other_valid_doc_filename = f'{hostel_owner_id}_{hostel_id}_validdoc.png'
     hostel_image_filename = f'{hostel_owner_id}_{hostel_id}_image.png'
 
+    image_electricity_bill.save(settings.MEDIA_ROOT + '/' + electricity_bill_filename)
+    image_other_valid_doc.save(settings.MEDIA_ROOT + '/' + other_valid_doc_filename)
+    image_hostel_image.save(settings.MEDIA_ROOT + '/' + hostel_image_filename)
+
     # inserting data in hostel table
     command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bill_filename}", "{other_valid_doc_filename}", "{hostel_image_filename}", 0, 0)'
     cursor.execute(command)
-
-    print(f'Paths: {electricity_bill_filename}, {other_valid_doc_filename},{hostel_image_filename}')
-
-    save_to = os.path.join(static_files_dir, 'media/main_app')
-
-    image_electricity_bill.save(save_to + '\\' + electricity_bill_filename)
-    image_other_valid_doc.save(save_to + '\\' + other_valid_doc_filename)
-    image_hostel_image.save(save_to + '\\' + hostel_image_filename)
 
     return hostel_owner_home_page(request)

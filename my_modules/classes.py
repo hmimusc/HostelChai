@@ -5,13 +5,7 @@ django.setup()
 
 
 from django.db import connection
-from pathlib import Path
 cursor = connection.cursor()
-
-
-base_dir = Path('__file__').resolve().parent.parent
-media_files_dir = os.path.join(base_dir, 'media')
-main_app_media_dir = os.path.join(media_files_dir, 'main_app')
 
 
 class Hostel:
@@ -32,9 +26,9 @@ class Hostel:
         self.road_number = hostel[4]
         self.house_number = hostel[5]
         self.postal_code = hostel[6]
-        self.electricity_bill = [f'{main_app_media_dir}\\', hostel[7]]
-        self.hostel_document = [f'{main_app_media_dir}\\', hostel[8]]
-        self.photo = [f'{main_app_media_dir}\\', hostel[9]]
+        self.electricity_bill = hostel[7]
+        self.hostel_document = hostel[8]
+        self.photo = hostel[9]
         self.verified = hostel[10]
         self.active = hostel[11]
 
@@ -46,9 +40,9 @@ class Hostel:
         self.road_number = data['road_number']
         self.house_number = data['house_number']
         self.postal_code = data['postal_code']
-        self.electricity_bill = [f'{main_app_media_dir}\\', data['electricity_bill']]
-        self.hostel_document = [f'{main_app_media_dir}\\', data['hostel_document']]
-        self.photo = [f'{main_app_media_dir}\\', data['photo']]
+        self.electricity_bill = data['electricity_bill']
+        self.hostel_document = data['hostel_document']
+        self.photo = data['photo']
         self.verified = data['verified']
         self.active = data['active']
 

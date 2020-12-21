@@ -23,5 +23,4 @@ urlpatterns = [
     path('add_hostel_page/', views.add_hostel_page, name='add_hostel_page'),
     path('add_hostel/', views.add_hostel, name='add_hostel'),
     path('test_page/', views.test_page, name='test_page'),
-]
-# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
