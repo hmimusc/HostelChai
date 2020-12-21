@@ -1,6 +1,7 @@
-from my_modules import page_works, exceptions
+from my_modules import page_works, exceptions, classes
 from django.shortcuts import render
 from django.db import connection
+from django.conf import settings
 from pathlib import Path
 from PIL import Image
 import datetime
@@ -11,8 +12,6 @@ cursor = connection.cursor()
 base_dir = Path('__file__').resolve().parent.parent
 text_files_dir = os.path.join(base_dir, 'text_files')
 temp_files_dir = os.path.join(base_dir, 'temp_files')
-media_files_dir = os.path.join(base_dir, 'media')
-main_app_media_dir = os.path.join(media_files_dir, 'main_app')
 # Create your views here.
 
 
@@ -30,7 +29,158 @@ def test_page(request):
     except KeyError:
         data_dict['login_status'] = 'false'
 
+    data_dict['image'] = 'H-1_HOS-4_electbill.png'
+
     return render(request, 'main_app/test_page.html', context=data_dict)
+
+
+def setup_admin_page(request):
+    return render(request, 'main_app/setup_admin_page.html', context={})
+
+
+def setup_admin(request):
+
+    name = request.POST.get('name')
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    gender = request.POST.get('gender')
+    phone = request.POST.get('phone')
+    email = request.POST.get('email')
+    address = request.POST.get('address')
+
+    command = f'select count(*) from user where id like "A%"'
+    cursor.execute(command)
+    user_id = f'A-{cursor.fetchall()[0][0] + 1}'
+
+    command = f'insert into user values ("{user_id}", "{name}", "{username}", "{password}", "null", CURRENT_DATE , "null", "null", "{gender}", "{phone}", "{email}", "{address}", 1, 9)'
+    cursor.execute(command)
+
+    return login_page(request)
+
+
+def requests_loader_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_hostel_loader_page',
+        'login_status': 'true',
+    }
+
+    command = 'select hostel_id from hostel where verified=0'
+    cursor.execute(command)
+
+    hostels = cursor.fetchall()
+
+    hostels = [hostel[0] for hostel in hostels]
+
+    data_dict['hostels'] = hostels
+    data_dict['checked'] = ['', 'checked', '']
+
+    return render(request, 'main_app/requests_loader_page.html', context=data_dict)
+
+
+def requests_loader(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    req_type = request.POST.get('req_type')
+
+    # print(f'[+] req_type: {req_type}')
+
+    if req_type == 'hostels':
+        return hostel_loader_page(request)
+    else:
+        return home_page(request)
+
+
+def hostel_loader_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    if 'hostel_id' in request.POST:
+        hostel_id = request.POST.get('hostel_id')
+    else:
+        return requests_loader_page(request)
+
+    hostel = classes.Hostel()
+    hostel.load(hostel_id)
+
+    command = f'select name, phone_number from user where id like "{hostel.hostel_owner_id}"'
+    cursor.execute(command)
+
+    hostel_owner_name, phone_number = cursor.fetchall()[0]
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+        'hostel_name': hostel.hostel_name,
+        'hostel_owner_name': hostel_owner_name,
+        'phone_number': phone_number,
+        'hostel_id': hostel.hostel_id,
+        'hostel_house_number': hostel.house_number,
+        'hostel_road_number': hostel.road_number,
+        'hostel_thana': hostel.thana,
+        'hostel_postal_code': hostel.postal_code,
+        'hostel_photo': hostel.photo,
+        'hostel_electricity_bill': hostel.electricity_bill,
+        'hostel_document': hostel.hostel_document,
+    }
+
+    return render(request, 'main_app/hostel_loader_page.html', context=data_dict)
+
+
+def approve_hostel(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    hostel_id = request.POST.get('hostel_id')
+    command = f'update hostel set verified=1, active=1 where hostel_id like "{hostel_id}"'
+    cursor.execute(command)
+
+    return hostel_owner_home_page(request)
 
 
 def login_page(request):
@@ -65,7 +215,10 @@ def login(request):
     command = f"select id, password from user where username like '{username}'"
     cursor.execute(command)
 
-    user_id, password = cursor.fetchall()[0]
+    try:
+        user_id, password = cursor.fetchall()[0]
+    except IndexError:
+        return login_page(request)
 
     user = user_id.split('-')[0]
 
@@ -115,9 +268,14 @@ def login(request):
         if user == 'S':
             data_dict['page_name'] = 'student_home_page'
             response = render(request, 'main_app/student_home_page.html', context=data_dict)
-        else:
+        elif user == 'H':
             data_dict['page_name'] = 'hostel_owner_home_page'
             response = render(request, 'main_app/hostel_owner_home_page.html', context=data_dict)
+        elif user == 'A':
+            data_dict['page_name'] = 'admin_home_page'
+            response = render(request, 'main_app/admin_home_page.html', context=data_dict)
+        else:
+            return logout(request)
 
         response.set_cookie('_login_session', cookie_content, expires=cookie_expires)
 
@@ -173,8 +331,37 @@ def home_page(request):
 
     if user_dict['user_type'] == 'S':
         return student_home_page(request)
-    else:
+    elif user_dict['user_type'] == 'H':
         return hostel_owner_home_page(request)
+    elif user_dict['user_type'] == 'A':
+        return admin_home_page(request)
+    else:
+        return logout(request)
+
+
+def admin_home_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/admin_home_page.html', context=data_dict)
 
 
 def student_home_page(request):
@@ -184,11 +371,16 @@ def student_home_page(request):
     except exceptions.LoginRequiredException:
         return login_page(request)
 
+    try:
+        page_works.user_verify(request, 'S')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'student_home_page',
         'login_status': 'true',
@@ -208,7 +400,7 @@ def hostel_owner_home_page(request):
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'hostel_owner_home_page',
         'login_status': 'true',
@@ -228,7 +420,7 @@ def add_hostel_page(request):
 
     data_dict = {
         'name': user_dict['name'],
-        'logged_in_username': user_dict['name'],
+        'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
         'page_name': 'hostel_owner_home_page',
         'login_status': 'true',
@@ -246,6 +438,17 @@ def add_hostel_page(request):
 
 
 def add_hostel(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
     # receiving data from frontend
     name = request.POST.get('name')
     thana = request.POST.get('thana')
@@ -273,14 +476,12 @@ def add_hostel(request):
     other_valid_doc_filename = f'{hostel_owner_id}_{hostel_id}_validdoc.png'
     hostel_image_filename = f'{hostel_owner_id}_{hostel_id}_image.png'
 
+    image_electricity_bill.save(settings.MEDIA_ROOT + '/' + electricity_bill_filename)
+    image_other_valid_doc.save(settings.MEDIA_ROOT + '/' + other_valid_doc_filename)
+    image_hostel_image.save(settings.MEDIA_ROOT + '/' + hostel_image_filename)
+
     # inserting data in hostel table
     command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bill_filename}", "{other_valid_doc_filename}", "{hostel_image_filename}", 0, 0)'
     cursor.execute(command)
-
-    print(f'Paths: {electricity_bill_filename}, {other_valid_doc_filename},{hostel_image_filename}')
-
-    image_electricity_bill.save(main_app_media_dir + '\\' + electricity_bill_filename)
-    image_other_valid_doc.save(main_app_media_dir + '\\' + other_valid_doc_filename)
-    image_hostel_image.save(main_app_media_dir + '\\' + hostel_image_filename)
 
     return hostel_owner_home_page(request)
