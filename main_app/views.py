@@ -223,6 +223,25 @@ def approve_hostel(request):
     return hostel_owner_home_page(request)
 
 
+def registration_page(request):
+
+    data_dict = {
+        'page_name': 'registration_page',
+        'login_status': 'false',
+    }
+
+    try:
+        page_works.request_verify(request, False)
+    except exceptions.LogoutRequiredException:
+        return home_page(request)
+
+    return render(request, 'main_app/registration_page.html', context=data_dict)
+
+
+def registration(request):
+    return registration_page(request)
+
+
 def login_page(request):
 
     data_dict = {

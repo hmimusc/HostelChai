@@ -36,6 +36,11 @@ class HostelOwner(User):
         pass
 
     def create(self, data, file):
+
+        user_data = {}
+        user_files = {}
+
+        User.create(self, user_data, user_files)
         pass
 
 
@@ -45,10 +50,16 @@ class Student(User):
         User.__init__(self)
         pass
 
-    def load(self):
+    def load_all(self, user_id):
+        User.load(self, user_id)
         pass
 
-    def create(self):
+    def create(self, data, file):
+
+        user_data = {}
+        user_files = {}
+
+        User.create(self, user_data, user_files)
         pass
 
 
