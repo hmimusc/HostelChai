@@ -5,7 +5,51 @@ django.setup()
 
 
 from django.db import connection
+from django.conf import settings
+from PIL import Image
 cursor = connection.cursor()
+
+
+class User:
+
+    def __init__(self):
+        pass
+
+    def load(self, user_id):
+        pass
+
+    def create(self, data, files):
+        pass
+
+    def save(self):
+        pass
+
+
+class HostelOwner(User):
+
+    def __init__(self):
+        User.__init__(self)
+        pass
+
+    def load_all(self, user_id):
+        User.load(self, user_id)
+        pass
+
+    def create(self, data, file):
+        pass
+
+
+class Student(User):
+
+    def __init__(self):
+        User.__init__(self)
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
 
 
 class Hostel:
@@ -32,19 +76,29 @@ class Hostel:
         self.verified = hostel[10]
         self.active = hostel[11]
 
-    def create(self, data):
-        self.hostel_id = data['hostel_id']
+    def create(self, data, files):
+
+        command = f'SELECT COUNT(*) FROM hostel'
+        cursor.execute(command)
+
+        self.hostel_id = f'HOS-{str(cursor.fetchall()[0][0] + 1)}'
         self.hostel_owner_id = data['hostel_owner_id']
         self.hostel_name = data['hostel_name']
         self.thana = data['thana']
         self.road_number = data['road_number']
         self.house_number = data['house_number']
         self.postal_code = data['postal_code']
-        self.electricity_bill = data['electricity_bill']
-        self.hostel_document = data['hostel_document']
-        self.photo = data['photo']
-        self.verified = data['verified']
-        self.active = data['active']
+        self.electricity_bill = f'{self.hostel_owner_id}_{self.hostel_id}_electricity_bill.png'
+        self.hostel_document = f'{self.hostel_owner_id}_{self.hostel_id}_hostel_document.png'
+        self.photo = f'{self.hostel_owner_id}_{self.hostel_id}_photo.png'
+        self.verified = 0
+        self.active = 0
+
+        self.files = {
+            'electricity_bill': Image.open(files['electricity_bill']),
+            'hostel_document': Image.open(files['hostel_document']),
+            'photo': Image.open(files['photo']),
+        }
 
     def save(self):
         command = f'select count(*) from hostel where hostel_id like "{self.hostel_id}"'
@@ -52,8 +106,116 @@ class Hostel:
         hostel_count = cursor.fetchall()[0][0]
 
         if hostel_count == 0:
-            command = f'INSERT INTO hostel VALUES("{self.hostel_id}", "{self.hostel_owner_id}", "{self.hostel_name}", "{self.thana}", "{self.road_number}", "{self.house_number}", "{self.postal_code}", "{self.electricity_bill[1]}", "{self.hostel_document[1]}", "{self.photo[1]}", {self.verified}, {self.active})'
+
+            self.files['electricity_bill'].save(f'{settings.MEDIA_ROOT}/{self.electricity_bill}')
+            self.files['hostel_document'].save(f'{settings.MEDIA_ROOT}/{self.hostel_document}')
+            self.files['photo'].save(f'{settings.MEDIA_ROOT}/{self.photo}')
+
+            command = f'INSERT INTO hostel VALUES("{self.hostel_id}", "{self.hostel_owner_id}", "{self.hostel_name}", "{self.thana}", "{self.road_number}", "{self.house_number}", "{self.postal_code}", "{self.electricity_bill}", "{self.hostel_document}", "{self.photo}", {self.verified}, {self.active})'
         else:
-            command = f'UPDATE hostel SET hostel_name="{self.hostel_name}", thana="{self.thana}", road_number="{self.road_number}", house_number="{self.house_number}", postal_code="{self.postal_code}", electricity_bill="{self.electricity_bill[1]}", hostel_document="{self.hostel_document[1]}", photo="{self.photo[1]}", verified={self.verified}, active={self.active} WHERE hostel_id="{self.hostel_id}"'
+            command = f'UPDATE hostel SET hostel_name="{self.hostel_name}", thana="{self.thana}", road_number="{self.road_number}", house_number="{self.house_number}", postal_code="{self.postal_code}", electricity_bill="{self.electricity_bill}", hostel_document="{self.hostel_document}", photo="{self.photo}", verified={self.verified}, active={self.active} WHERE hostel_id="{self.hostel_id}"'
 
         cursor.execute(command)
+
+
+class Advertise:
+
+    def __init__(self):
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class Complaint:
+
+    def __init__(self):
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class Transaction:
+
+    def __init__(self):
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class ReceivedTransaction(Transaction):
+
+    def __init__(self):
+        Transaction.__init__(self)
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class PaymentRequest(Transaction):
+
+    def __init__(self):
+        Transaction.__init__(self)
+        pass
+
+    def load(self):
+        pass
+
+    def create(self):
+        pass
+
+    def save(self):
+        pass
+
+
+class Rating:
+
+    def __init__(self):
+        pass
+
+
+class HostelRating(Rating):
+
+    def __init__(self):
+        Rating.__init__(self)
+        pass
+
+
+class StudentRating(Rating):
+
+    def __init__(self):
+        Rating.__init__(self)
+        pass
+
+
+class Review:
+
+    def __init__(self):
+        pass

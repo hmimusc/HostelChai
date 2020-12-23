@@ -1,9 +1,7 @@
 from my_modules import page_works, exceptions, classes
 from django.shortcuts import render
 from django.db import connection
-from django.conf import settings
 from pathlib import Path
-from PIL import Image
 import datetime
 import os
 
@@ -12,7 +10,6 @@ cursor = connection.cursor()
 base_dir = Path('__file__').resolve().parent.parent
 text_files_dir = os.path.join(base_dir, 'text_files')
 temp_files_dir = os.path.join(base_dir, 'temp_files')
-# Create your views here.
 
 
 def test_page(request):
@@ -56,6 +53,49 @@ def setup_admin(request):
     cursor.execute(command)
 
     return login_page(request)
+
+
+def error_404(request, exception=''):
+
+    try:
+        page_works.request_verify(request, True)
+
+        user_dict = page_works.get_active_user(request)
+
+        data_dict = {
+            'name': user_dict['name'],
+            'logged_in_username': user_dict['username'],
+            'user_type': user_dict['user_type'],
+            'page_name': '404_page',
+            'login_status': 'true',
+        }
+
+    except exceptions.LoginRequiredException:
+        pass
+
+    return render(request, 'main_app/404_page.html', context=data_dict)
+
+
+def error_500(request, template_name='500.html'):
+
+    data_dict = {}
+
+    try:
+        page_works.request_verify(request, True)
+
+        user_dict = page_works.get_active_user(request)
+
+        data_dict = {
+            'name': user_dict['name'],
+            'logged_in_username': user_dict['username'],
+            'user_type': user_dict['user_type'],
+            'page_name': '404_page',
+            'login_status': 'true',
+        }
+    except exceptions.LoginRequiredException:
+        pass
+
+    return render(request, template_name, context=data_dict)
 
 
 def requests_loader_page(request):
@@ -427,9 +467,7 @@ def add_hostel_page(request):
     }
 
     file = open(text_files_dir + '\\thanas.txt', 'r')
-
     thanas = file.readlines()
-
     file.close()
 
     data_dict['thanas'] = thanas
@@ -449,39 +487,28 @@ def add_hostel(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # receiving data from frontend
+    hostel_owner_id = page_works.get_active_user(request)['userid']
     name = request.POST.get('name')
     thana = request.POST.get('thana')
     postal_code = request.POST.get('postal_code')
     house_no = request.POST.get('house_no')
     road_no = request.POST.get('road_no')
 
-    image_electricity_bill = Image.open(request.FILES['electricity_bill'])
-    image_other_valid_doc = Image.open(request.FILES['other_valid_doc'])
-    image_hostel_image = Image.open(request.FILES['image'])
+    new_hostel = classes.Hostel()
+    new_hostel.create({
+            'hostel_owner_id': hostel_owner_id,
+            'hostel_name': name,
+            'thana': thana,
+            'road_number': road_no,
+            'house_number': house_no,
+            'postal_code': postal_code,
+        }, {
+            'electricity_bill': request.FILES['electricity_bill'],
+            'hostel_document': request.FILES['other_valid_doc'],
+            'photo': request.FILES['image'],
+        }
+    )
 
-    # fetching number of hostel from hostel table
-    command = f'SELECT COUNT(*) FROM hostel'
-    cursor.execute(command)
-    data = cursor.fetchall()
-
-    # generating new hostel id
-    hostel_id = f'HOS-{str(data[0][0]+1)}'
-
-    # fetching hostel owner id from session
-    hostel_owner_id = page_works.get_active_user(request)['userid']
-
-    # generalizing filenames
-    electricity_bill_filename = f'{hostel_owner_id}_{hostel_id}_electbill.png'
-    other_valid_doc_filename = f'{hostel_owner_id}_{hostel_id}_validdoc.png'
-    hostel_image_filename = f'{hostel_owner_id}_{hostel_id}_image.png'
-
-    image_electricity_bill.save(settings.MEDIA_ROOT + '/' + electricity_bill_filename)
-    image_other_valid_doc.save(settings.MEDIA_ROOT + '/' + other_valid_doc_filename)
-    image_hostel_image.save(settings.MEDIA_ROOT + '/' + hostel_image_filename)
-
-    # inserting data in hostel table
-    command = f'INSERT INTO hostel VALUES("{hostel_id}", "{hostel_owner_id}", "{name}", "{thana}", "{road_no}", "{house_no}", "{postal_code}", "{electricity_bill_filename}", "{other_valid_doc_filename}", "{hostel_image_filename}", 0, 0)'
-    cursor.execute(command)
+    new_hostel.save()
 
     return hostel_owner_home_page(request)

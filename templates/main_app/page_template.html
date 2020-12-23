@@ -34,12 +34,11 @@
                 </ul>
 
                 <ul class="navbar-nav justify-content-end">
-                    {% if login_status == "false" %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:login_page' %}">Login</a></li>
-                    {% else %}
+                    {% if login_status == "true" %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:logout' %}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:login_page' %}">Login</a></li>
                     {% endif %}
-
                 </ul>
             </div>
         </nav>
