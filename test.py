@@ -5,4 +5,4 @@ django.setup()
 
 
 
-
+print('test')
