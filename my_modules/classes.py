@@ -170,7 +170,7 @@ class Complaint:
         self.user_id = data['user_id']
         self.subject = data['subject']
         self.complaint = data['complaint']
-        self.photo = f'{self.user_id}_{self.complaint_id}_evidence.png'
+        self.photo = f'{self.user_id}_complaint-{self.complaint_id}_evidence.png'
         self.resolved = 0
 
         self.files = {
