@@ -560,8 +560,25 @@ def complaint_box(request):
     except exceptions.LoginRequiredException:
         return login_page(request)
 
-    # your code
+    user_id = page_works.get_active_user(request)['userid']
+    subject = request.POST.get('subject')
+    complaint = request.POST.get('details')
 
-    # code end
+    new_complaint = classes.Complaint()
+
+    new_complaint.create(
+        {
+            'user_id': user_id,
+            'subject': subject,
+            'complaint': complaint,
+        },
+        {
+            'photo': request.FILES['photo'],
+        }
+    )
+    new_complaint.save()
+
+
+
 
     return home_page(request)
