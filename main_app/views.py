@@ -225,15 +225,15 @@ def approve_hostel(request):
 
 def registration_page(request):
 
-    data_dict = {
-        'page_name': 'registration_page',
-        'login_status': 'false',
-    }
-
     try:
         page_works.request_verify(request, False)
     except exceptions.LogoutRequiredException:
         return home_page(request)
+
+    data_dict = {
+        'page_name': 'registration_page',
+        'login_status': 'false',
+    }
 
     return render(request, 'main_app/registration_page.html', context=data_dict)
 
@@ -244,15 +244,15 @@ def registration(request):
 
 def login_page(request):
 
-    data_dict = {
-        'page_name': 'login_page',
-        'login_status': 'false',
-    }
-
     try:
         page_works.request_verify(request, False)
     except exceptions.LogoutRequiredException:
         return home_page(request)
+
+    data_dict = {
+        'page_name': 'login_page',
+        'login_status': 'false',
+    }
 
     return render(request, 'main_app/login_page.html', context=data_dict)
 
@@ -531,3 +531,37 @@ def add_hostel(request):
     new_hostel.save()
 
     return hostel_owner_home_page(request)
+
+
+def complaint_box_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'complaint_box_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/complaint_box_page.html', context=data_dict)
+
+
+def complaint_box(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    # your code
+
+    # code end
+
+    return home_page(request)

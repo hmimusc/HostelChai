@@ -27,5 +27,6 @@ urlpatterns = [
     path('hostel_owner_home_page/', views.hostel_owner_home_page, name='hostel_owner_home_page'),
     path('add_hostel_page/', views.add_hostel_page, name='add_hostel_page'),
     path('add_hostel/', views.add_hostel, name='add_hostel'),
+    path('complaint_box_page/', views.complaint_box_page, name='complaint_box_page'),
     path('test_page/', views.test_page, name='test_page'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
