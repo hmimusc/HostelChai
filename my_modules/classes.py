@@ -1,12 +1,14 @@
 import os
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'HostelChai.settings')
 import django
-django.setup()
 
+django.setup()
 
 from django.db import connection
 from django.conf import settings
 from PIL import Image
+
 cursor = connection.cursor()
 
 
@@ -114,7 +116,6 @@ class HostelOwner(User):
         pass
 
     def load_hostel_owner(self, user_id):
-        User.load(self, user_id)
         pass
 
     def create_hostel_owner(self, data, files):
@@ -168,7 +169,6 @@ class Student(User):
         pass
 
     def load_student(self, user_id):
-        User.load(self, user_id)
         pass
 
     def create_student(self, data, files):
@@ -277,11 +277,12 @@ class Hostel:
         cursor.execute(command)
         hostel_count = cursor.fetchall()[0][0]
 
-        self.files['electricity_bill'].save(f'{settings.MEDIA_ROOT}/{self.electricity_bill}')
-        self.files['hostel_document'].save(f'{settings.MEDIA_ROOT}/{self.hostel_document}')
-        self.files['photo'].save(f'{settings.MEDIA_ROOT}/{self.photo}')
-
         if hostel_count == 0:
+
+            self.files['electricity_bill'].save(f'{settings.MEDIA_ROOT}/{self.electricity_bill}')
+            self.files['hostel_document'].save(f'{settings.MEDIA_ROOT}/{self.hostel_document}')
+            self.files['photo'].save(f'{settings.MEDIA_ROOT}/{self.photo}')
+
             command = f'INSERT INTO hostel VALUES("{self.hostel_id}", "{self.hostel_owner_id}", "{self.hostel_name}", "{self.thana}", "{self.road_number}", "{self.house_number}", "{self.postal_code}", "{self.electricity_bill}", "{self.hostel_document}", "{self.photo}", {self.verified}, {self.active})'
         else:
             command = f'UPDATE hostel SET hostel_name="{self.hostel_name}", thana="{self.thana}", road_number="{self.road_number}", house_number="{self.house_number}", postal_code="{self.postal_code}", electricity_bill="{self.electricity_bill}", hostel_document="{self.hostel_document}", photo="{self.photo}", verified={self.verified}, active={self.active} WHERE hostel_id="{self.hostel_id}"'

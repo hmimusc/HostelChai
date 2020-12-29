@@ -643,5 +643,6 @@ def complaint_box(request):
             'photo': request.FILES['photo'],
         }
     )
+    new_complaint.save()
 
     return home_page(request)
