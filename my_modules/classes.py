@@ -31,7 +31,7 @@ class HostelOwner(User):
         User.__init__(self)
         pass
 
-    def load_all(self, user_id):
+    def load(self, user_id):
         User.load(self, user_id)
         pass
 
@@ -50,7 +50,7 @@ class Student(User):
         User.__init__(self)
         pass
 
-    def load_all(self, user_id):
+    def load(self, user_id):
         User.load(self, user_id)
         pass
 

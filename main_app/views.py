@@ -28,6 +28,10 @@ def test_page(request):
 
     data_dict['image'] = 'H-1_HOS-4_electbill.png'
 
+    data_dict['days'] = range(32)[1:]
+    data_dict['months'] = 'January,February,March,April,May,June,July,August,September,October,November,December'.split(',')
+    data_dict['years'] = range(2022)[1990:]
+
     return render(request, 'main_app/test_page.html', context=data_dict)
 
 
@@ -238,8 +242,42 @@ def registration_page(request):
     return render(request, 'main_app/registration_page.html', context=data_dict)
 
 
-def registration(request):
-    return registration_page(request)
+def student_registration(request):
+
+    try:
+        page_works.request_verify(request, False)
+    except exceptions.LogoutRequiredException:
+        return home_page(request)
+
+    return login_page(request)
+
+
+def hostel_owner_registration(request):
+
+    try:
+        page_works.request_verify(request, False)
+    except exceptions.LogoutRequiredException:
+        return home_page(request)
+
+    hostel_owner = classes.HostelOwner()
+
+    hostel_owner.create({
+        'name':  request.POST.get('h_name'),
+        'username': request.POST.get('h_username'),
+        'password': request.POST.get('h_password'),
+        'dob': request.POST.get('h_dob'),
+        'gender': request.POST.get('h_gender'),
+        'email': request.POST.get('h_email'),
+        'phone_number': request.POST.get('h_phone_number'),
+        'occupation': request.POST.get('occupation'),
+        'permanent_address': request.POST.get('h_permanent_address'),
+    }, {
+        'profile_picture': request.FILES.get(),
+        'nid': '',
+        'birth_certificate': '',
+    })
+
+    return login_page(request)
 
 
 def login_page(request):

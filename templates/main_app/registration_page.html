@@ -20,113 +20,247 @@
             <h1 class="text-center header">Registration</h1>
         </div>
 
-        <div class="jumbotron jumbotron_suffix bg-dark">
-            <form class="form-group" action="{% url 'main_app:registration' %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+        <div class="accordion" id="registration_form">
+            <p>
+                <div class="btn-group btn-group-toggle btn-block" data-toggle="buttons">
+                    <label class="btn btn-outline-secondary active">
+                        <input id="student_registration" type="radio" data-toggle="collapse" data-target="#student_registration_form" aria-expanded="true" aria-controls="student_registration_form" checked>
+                        <span class="text-light"><b>Register as Student</b></span>
+                    </label>
 
-                <p>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Register as: </span>
-                        </div>
-                        <select class="form-control custom-select" id="user_type" name="user_type" required>
-                            <option value="S" selected>Student</option>
-                            <option value="H">Hostel Owner</option>
-                        </select>
-                    </div>
-                </p>
+                    <label class="btn btn-outline-secondary active">
+                        <input id="hostel_owner_registration" type="radio" data-toggle="collapse" data-target="#hostel_owner_registration_form" aria-expanded="true" aria-controls="hostel_owner_registration_form">
+                        <span class="text-light"><b>Register as Hostel Owner</b></span>
+                    </label>
+                </div>
+            </p>
 
-                <p>
-                     <div class="row">
-                        <div class="col">
-                            <input class="form-control" type="text" name="name" placeholder="Name" required>
-                        </div>
-                        <div class="col">
-                            <input class="form-control" id="dob" type="date" name="dob">
-                        </div>
-                        <div class="col">
-                            <select class="form-control custom-select" name="gender" required>
-                                <option value="male" selected>Male</option>
-                                <option value="female">Female</option>
-                            </select>
-                        </div>
-                    </div>
-                </p>
+            <div class="jumbotron jumbotron_suffix bg-dark">
+                <div class="collapse show" id="student_registration_form" data-parent="#registration_form">
+                    <form class="form-group" action="{% url 'main_app:student_registration' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
 
-                <p>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-control" type="text" name="username" placeholder="Username" required>
-                        </div>
-                        <div class="col">
-                            <input class="form-control" type="password" name="password" placeholder="Password" required>
-                        </div>
-                        <div class="col">
-                            <input class="form-control" type="password" name="retype_password" placeholder="Retype password" required>
-                        </div>
-                    </div>
-                </p>
+                        <p>
+                             <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="s_name" placeholder="Name" required>
+                                </div>
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Birth date:</span>
+                                        </div>
+                                        <input class="form-control dob" id="s_dob" type="date" name="s_dob">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <select class="form-control custom-select" name="s_gender" required>
+                                        <option value="male" selected>Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </p>
 
-                <p>
-                    <div class="row">
-                        <div class="col">
-                            <input class="form-control" type="text" name="phone" placeholder="Phone" required>
-                        </div>
-                        <div class="col">
-                            <input class="form-control" type="email" name="email" placeholder="Email" required>
-                        </div>
-                    </div>
-                </p>
+                        <p>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="s_username" placeholder="Username" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="password" name="s_password" placeholder="Password" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="password" name="s_retype_password" placeholder="Retype password" required>
+                                </div>
+                            </div>
+                        </p>
 
-                <p>
-                    <label class="text-light" for="permanent_address">Permanent Address:</label>
-                    <textarea class="form-control" id="permanent_address" name="address" rows="2" required></textarea>
-                </p>
+                        <p>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="s_phone_number" placeholder="Phone" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="email" name="s_email" placeholder="Email" required>
+                                </div>
+                            </div>
+                        </p>
 
-                <p>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Profile picture</span>
-                        </div>
+                        <br>
 
-                        <div class="custom-file">
-                            <input class="custom-file-input" id="profile_picture" type="file" name="profile_picture" required>
-                            <label class="custom-file-label bg_custom" for="profile_picture">Choose file</label>
-                        </div>
-                    </div>
-                </p>
+                        <p>
+                            <textarea class="form-control" id="s_permanent_address" name="s_permanent_address" rows="2" placeholder="write your permanent address ..." required></textarea>
+                        </p>
 
-                <p>
-                     <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Clear image of the front of your NID</span>
-                        </div>
+                        <br>
 
-                        <div class="custom-file">
-                            <input class="custom-file-input" id="nid" type="file" name="nid">
-                            <label class="custom-file-label bg_custom" for="nid">Choose file</label>
-                        </div>
-                    </div>
-                </p>
+                        <p>
+                            <input class="form-control" type="text" name="institution" placeholder="Institution name" required>
+                        </p>
 
-                <p>
-                     <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Clear image of your Birth certificate</span>
-                        </div>
+                        <p>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="degree" placeholder="Level" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="text" name="student_id" placeholder="ID" required>
+                                </div>
+                            </div>
+                        </p>
 
-                        <div class="custom-file">
-                            <input class="custom-file-input" id="birth_certificate" type="file" name="birth_certificate">
-                            <label class="custom-file-label bg_custom" for="birth_certificate">Choose file</label>
-                        </div>
-                    </div>
-                </p>
+                        <br>
 
-                <br>
+                        <p>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Profile picture</span>
+                                </div>
 
-                <input class="form-control btn btn-outline-success" type="submit" value="Submit">
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="s_profile_picture" type="file" name="s_profile_picture" required>
+                                    <label class="custom-file-label bg_custom" for="profile_picture">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
 
-            </form>
+                        <p>
+                             <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Clear image of the front of your NID</span>
+                                </div>
+
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="s_nid" type="file" name="s_nid">
+                                    <label class="custom-file-label bg_custom" for="nid">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                             <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Clear image of your Birth certificate</span>
+                                </div>
+
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="s_birth_certificate" type="file" name="s_birth_certificate">
+                                    <label class="custom-file-label bg_custom" for="birth_certificate">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
+
+                        <br>
+
+                        <input class="form-control btn btn-outline-success" type="submit" value="Submit">
+
+                    </form>
+                </div>
+                <div class="collapse" id="hostel_owner_registration_form" data-parent="#registration_form">
+                    <form class="form-group" action="{% url 'main_app:hostel_owner_registration' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <p>
+                             <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="h_name" placeholder="Name" required>
+                                </div>
+                                <div class="col">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">Birth date:</span>
+                                        </div>
+                                        <input class="form-control dob" id="dob_hostel_owner" type="date" name="h_dob">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <select class="form-control custom-select" name="h_gender" required>
+                                        <option value="male" selected>Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="h_username" placeholder="Username" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="password" name="h_password" placeholder="Password" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="password" name="h_retype_password" placeholder="Retype password" required>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                            <div class="row">
+                                <div class="col">
+                                    <input class="form-control" type="text" name="occupation" placeholder="Occupation">
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="text" name="h_phone_number" placeholder="Phone" required>
+                                </div>
+                                <div class="col">
+                                    <input class="form-control" type="email" name="h_email" placeholder="Email" required>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                            <textarea class="form-control" id="permanent_address" name="h_permanent_address" rows="2" placeholder="write your permanent address ..." required></textarea>
+                        </p>
+
+                        <p>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Profile picture</span>
+                                </div>
+
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="profile_picture" type="file" name="h_profile_picture" required>
+                                    <label class="custom-file-label bg_custom" for="profile_picture">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Clear image of the front of your NID</span>
+                                </div>
+
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="nid" type="file" name="h_nid" required>
+                                    <label class="custom-file-label bg_custom" for="nid">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
+
+                        <p>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Clear image of your Birth certificate</span>
+                                </div>
+
+                                <div class="custom-file">
+                                    <input class="custom-file-input" id="birth_certificate" type="file" name="h_birth_certificate" required>
+                                    <label class="custom-file-label bg_custom" for="birth_certificate">Choose file</label>
+                                </div>
+                            </div>
+                        </p>
+
+                        <br>
+
+                        <input class="form-control btn btn-outline-success" type="submit" value="Submit">
+
+                    </form>
+                </div>
+            </div>
         </div>
 
     {% endblock %}
