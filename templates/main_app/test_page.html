@@ -62,27 +62,44 @@
         </div>
 
         <br>
-        <form class="form-group" id="load_hostel" action="#" method="post">
-            {% csrf_token %}
 
-            <div class="row">
-                <div class="col-9">
-                    <input class="form-control" id="hostel_id" type="text" name="hostel_id" required>
-                </div>
-                <div class="col-3">
-                    <input class="form-control btn btn-outline-success" id="load_data" type="submit" value="Load">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Birth date:</span>
+                    </div>
+                    <select class="custom-select">
+                        {% for day in days %}
+                            {% if day == cur_day %}
+                                <option value="{{ day }}" selected>{{ day }}</option>
+                            {% else %}
+                                <option value="{{ day }}">{{ day }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <select class="custom-select">
+                        {% for month in months %}
+                            {% if month == cur_month %}
+                                <option value="{{ month }}" selected>{{ month }}</option>
+                            {% else %}
+                                <option value="{{ month }}">{{ month }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <select class="custom-select">
+                        {% for year in years %}
+                            {% if year == cur_year %}
+                                <option value="{{ year }}" selected>{{ year }}</option>
+                            {% else %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
-        </form>
-
-        <h1 class="text-center text-light"> Hostel Data </h1>
-
-        <div id="ajax_data">
-
-        </div>
-
-        <div class="jumbotron">
-            <img src="{{ MEDIA_URL }}{{ image }}" alt="Image not fount ):" height="300" width="300">
+            <div class="col-3"></div>
         </div>
 
     {% endblock %}

@@ -20,11 +20,93 @@ class User:
     def load(self, user_id):
         pass
 
-    def create(self, data, files):
-        pass
+    def create(self, user_type, data, files):
+
+        command = f'select count(*) from user where user_type={user_type}'
+        cursor.execute(command)
+
+        user_type_count = cursor.fetchall()[0][0]
+        user_type_string = ''
+
+        if user_type == 0:
+            user_type_string = 'S'
+        elif user_type == 1:
+            user_type_string = 'H'
+        elif user_type == 9:
+            user_type_string = 'A'
+
+        self.user_type = user_type
+        self.id = f'{user_type_string}-{user_type_count + 1}'
+        self.name = data['name']
+        self.username = data['username']
+        self.password = data['password']
+        self.dob = data['dob']
+        self.gender = data['gender']
+        self.phone_number = data['phone_number']
+        self.email = data['email']
+        self.permanent_address = data['permanent_address']
+
+        self.profile_picture = f'{self.id}_profile_picture.png'
+        self.nid = f'{self.id}_nid.png'
+        self.birth_certificate = f'{self.id}_birth_certificate.png'
+
+        self.files = {
+            'profile_picture': Image.open(files['profile_picture']),
+            'nid': Image.open(files['nid']),
+            'birth_certificate': Image.open(files['birth_certificate']),
+        }
+
+        self.verified = 0
 
     def save(self):
-        pass
+
+        self.files['profile_picture'].save(f'{settings.MEDIA_ROOT}/{self.profile_picture}')
+        self.files['nid'].save(f'{settings.MEDIA_ROOT}/{self.nid}')
+        self.files['birth_certificate'].save(f'{settings.MEDIA_ROOT}/{self.birth_certificate}')
+
+        command = f'select count(*) from user where id like "{self.id}"'
+        cursor.execute(command)
+        user_count = cursor.fetchall()[0][0]
+
+        if user_count == 0:
+            command = (
+                f'insert into user values (' +
+                f'"{self.id}", ' +
+                f'"{self.name}", ' +
+                f'"{self.username}", ' +
+                f'"{self.password}", ' +
+                f'"{self.profile_picture}", ' +
+                f'"{self.dob}", ' +
+                f'"{self.nid}", ' +
+                f'"{self.birth_certificate}", ' +
+                f'"{self.gender}", ' +
+                f'"{self.phone_number}", ' +
+                f'"{self.email}", ' +
+                f'"{self.permanent_address}", ' +
+                f'{self.verified}, ' +
+                f'{self.user_type}' +
+                f')'
+            )
+            cursor.execute(command)
+        else:
+            command = (
+                f'update user set ' +
+                f'id="{self.id}", ' +
+                f'name="{self.name}", ' +
+                f'username="{self.username}", ' +
+                f'password="{self.password}", ' +
+                f'profile_picture="{self.profile_picture}", ' +
+                f'dob="{self.dob}", ' +
+                f'nid="{self.nid}", ' +
+                f'birth_certificate="{self.birth_certificate}", ' +
+                f'gender="{self.gender}", ' +
+                f'phone_number="{self.phone_number}", ' +
+                f'email="{self.email}", ' +
+                f'permanent_address="{self.permanent_address}", ' +
+                f'verified={self.verified}, ' +
+                f'user_type={self.user_type}'
+            )
+            cursor.execute(command)
 
 
 class HostelOwner(User):
@@ -33,16 +115,51 @@ class HostelOwner(User):
         User.__init__(self)
         pass
 
-    def load_all(self, user_id):
-        User.load(self, user_id)
+    def load_hostel_owner(self, user_id):
         pass
 
-    def create(self, data, file):
-        user_data = {}
-        user_files = {}
+    def create_hostel_owner(self, data, files):
 
-        User.create(self, user_data, user_files)
-        pass
+        User.create(self, 1, {
+            'name': data['name'],
+            'username': data['username'],
+            'password': data['password'],
+            'dob': data['dob'],
+            'gender': data['gender'],
+            'email': data['email'],
+            'phone_number': data['phone_number'],
+            'permanent_address': data['permanent_address'],
+        }, {
+            'profile_picture': files['profile_picture'],
+            'nid': files['nid'],
+            'birth_certificate': files['birth_certificate'],
+        })
+
+        self.user_id = self.id
+        self.occupation = data['occupation']
+        self.due = 0
+        self.active = 0
+
+    def save_hostel_owner(self):
+        User.save(self)
+
+        command = f'select count(*) from hostel_owner where user_id like "{self.id}"'
+        cursor.execute(command)
+
+        hostel_owner_count = cursor.fetchall()[0][0]
+
+        if hostel_owner_count == 0:
+            command = f'insert into hostel_owner values ("{self.user_id}", "{self.occupation}", {self.due}, {self.verified})'
+            cursor.execute(command)
+        else:
+            command = (
+                f'update hostel_owner set ' +
+                f'user_id={self.user_id} ' +
+                f'occupation={self.occupation} ' +
+                f'due={self.due} ' +
+                f'verified={self.verified}'
+            )
+            cursor.execute(command)
 
 
 class Student(User):
@@ -51,16 +168,60 @@ class Student(User):
         User.__init__(self)
         pass
 
-    def load_all(self, user_id):
-        User.load(self, user_id)
+    def load_student(self, user_id):
         pass
 
-    def create(self, data, file):
-        user_data = {}
-        user_files = {}
+    def create_student(self, data, files):
 
-        User.create(self, user_data, user_files)
-        pass
+        User.create(self, 0, {
+            'name': data['name'],
+            'username': data['username'],
+            'password': data['password'],
+            'dob': data['dob'],
+            'gender': data['gender'],
+            'email': data['email'],
+            'phone_number': data['phone_number'],
+            'permanent_address': data['permanent_address'],
+        }, {
+            'profile_picture': files['profile_picture'],
+            'nid': files['nid'],
+            'birth_certificate': files['birth_certificate'],
+        })
+
+        self.user_id = self.id
+        self.institution = data['institution']
+        self.degree = data['degree']
+        self.student_id = data['student_id']
+        self.current_hostel_id = 'null'
+
+    def save_student(self):
+        User.save(self)
+
+        command = f'select count(*) from student where user_id like "{self.id}"'
+        cursor.execute(command)
+
+        student_count = cursor.fetchall()[0][0]
+
+        if student_count == 0:
+            command = (
+                f'insert into student(user_id, institution, degree, student_id) values ( ' +
+                f'"{self.user_id}", ' +
+                f'"{self.institution}", ' +
+                f'"{self.degree}", ' +
+                f'"{self.student_id}" ' +
+                f')'
+            )
+            cursor.execute(command)
+        else:
+            command = (
+                f'update student set ' +
+                f'user_id="{self.user_id}"' +
+                f'institution="{self.institution}" ' +
+                f'degree="{self.degree}" ' +
+                f'student_id="{self.student_id}" ' +
+                f'current_hostel_id="{self.current_hostel_id}"'
+            )
+            cursor.execute(command)
 
 
 class Hostel:
