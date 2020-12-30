@@ -18,7 +18,7 @@
                 <a class="navbar-brand" href="{% url 'main_app:landing_page' %}"><b>HOSTEL CHAI ?</b></a>
 
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Feed</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:ads_feed_page' page_number=1 %}">Feed</a></li>
 
                     {% if user_type == 'H' %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:add_hostel_page' %}">Add Hostel</a></li>

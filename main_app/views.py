@@ -124,15 +124,23 @@ def requests_loader_page(request):
         'login_status': 'true',
     }
 
+    command = 'select id from user where verified=0'
+    cursor.execute(command)
+    users = [user[0] for user in cursor.fetchall()]
+
     command = 'select hostel_id from hostel where verified=0'
     cursor.execute(command)
+    hostels = [hostel[0] for hostel in cursor.fetchall()]
 
-    hostels = cursor.fetchall()
+    command = 'select ads_id from advertise where approved=0'
+    cursor.execute(command)
+    ads = [ad[0] for ad in cursor.fetchall()]
 
-    hostels = [hostel[0] for hostel in hostels]
-
+    data_dict['users'] = users
     data_dict['hostels'] = hostels
-    data_dict['checked'] = ['', 'checked', '']
+    data_dict['ads'] = ads
+
+    data_dict['checked'] = ['', '', 'checked']
 
     return render(request, 'main_app/requests_loader_page.html', context=data_dict)
 
@@ -624,7 +632,7 @@ def ad_posting_page(request):
 
     for hostel in hostels:
         if hostel.hostel_owner_id == user_dict['userid'] and hostel.verified == 1:
-            hostel_id_name.append(f'{hostel.hostel_id}-{hostel.hostel_name}')
+            hostel_id_name.append(f'{hostel.hostel_id} {hostel.hostel_name}')
 
     data_dict = {
         'name': user_dict['name'],
@@ -654,6 +662,88 @@ def ad_posting(request):
     # code end
 
     return home_page(request)
+
+
+def ads_feed_page(request, page_number=0):
+
+    login_status = 'true'
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        login_status = 'false'
+
+    data_dict = {}
+
+    if login_status == 'true':
+        user_dict = page_works.get_active_user(request)
+        data_dict = {
+            'name': user_dict['name'],
+            'logged_in_username': user_dict['username'],
+            'user_type': user_dict['user_type'],
+            'page_name': 'ad_feed_page',
+            'login_status': 'true',
+        }
+    else:
+        data_dict = {
+            'page_name': 'ads_feed_page',
+            'login_status': 'false',
+        }
+
+    # demo code (you've to implement this part)
+
+    # max 12 ads per page. you've to calculate total number of page
+    total_page = 10
+
+    # construct a list like this
+    # number of max ads per row = 4. If total ads = 40 then total row = 40/4 = 10
+    # number of max row = 3
+    # for each acquire following data from database
+    # idx=0: hostel_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
+
+    # acquire the ads according to the page_number
+
+    ads = [ # demo list
+        [
+
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+        ],
+        [
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+        ],
+        [
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+        ]
+    ]
+
+    # demo end
+
+    data_dict['ads'] = ads
+
+    if page_number == 0:
+        page_number = 1
+    elif page_number > total_page:
+        page_number = total_page
+
+    pages = [[p, ''] for p in range(total_page + 1)]
+
+    pages[page_number][1] = 'active'
+
+    data_dict['previous_page'] = page_number - 1
+    data_dict['next_page'] = page_number + 1
+    data_dict['pages'] = pages[1:]
+    data_dict['current_page'] = page_number
+
+    return render(request, 'main_app/ads_feed_page.html', context=data_dict)
 
 
 def complaint_box_page(request):
