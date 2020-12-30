@@ -124,15 +124,23 @@ def requests_loader_page(request):
         'login_status': 'true',
     }
 
+    command = 'select id from user where verified=0'
+    cursor.execute(command)
+    users = [user[0] for user in cursor.fetchall()]
+
     command = 'select hostel_id from hostel where verified=0'
     cursor.execute(command)
+    hostels = [hostel[0] for hostel in cursor.fetchall()]
 
-    hostels = cursor.fetchall()
+    command = 'select ads_id from advertise where approved=0'
+    cursor.execute(command)
+    ads = [ad[0] for ad in cursor.fetchall()]
 
-    hostels = [hostel[0] for hostel in hostels]
-
+    data_dict['users'] = users
     data_dict['hostels'] = hostels
-    data_dict['checked'] = ['', 'checked', '']
+    data_dict['ads'] = ads
+
+    data_dict['checked'] = ['', '', 'checked']
 
     return render(request, 'main_app/requests_loader_page.html', context=data_dict)
 
