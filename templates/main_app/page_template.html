@@ -22,7 +22,7 @@
 
                     {% if user_type == 'H' %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:add_hostel_page' %}">Add Hostel</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Post ad.</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:ad_posting_page' %}">Post ad.</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">Manage ads.</a></li>
                     {% elif user_type == 'S' %}
                         <li class="nav-item"><a class="nav-link" href="#">Find a Hostel</a></li>
