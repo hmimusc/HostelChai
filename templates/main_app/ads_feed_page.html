@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% extends "main_app/page_template.html" %}
+
+    {% load static %}
+
+    {% block title %}
+        Hostel Chai ?
+    {% endblock %}
+
+    {% block my_stylesheet %}
+        <link rel="stylesheet" href="{% static "main_app/css/ads_feed_page.css" %}">
+    {% endblock %}
+
+    {% block my_js %}
+        <script src="{% static "main_app/js/ads_feed_page.js" %}"></script>
+    {% endblock %}
+
+    {% block main_block %}
+        <div class="jumbotron jumbotron_suffix_unified bg-secondary">
+            <h1 class="text-dark text-center header">Posts</h1>
+        </div>
+
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=previous_page %}">Previous</a></li>
+
+                {% for page in pages %}
+                    <li class="page-item"><a class="btn btn-outline-info {{ page.1 }}" href="{% url 'main_app:ads_feed_page' page_number=page.0 %}">{{ page.0 }}</a></li>
+                {% endfor %}
+
+                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=next_page %}">Next</a></li>
+            </ul>
+        </nav>
+
+        <br>
+
+        {% for ad_row in ads %}
+            <div class="row">
+                {% for ad in ad_row %}
+                    <div class="col-3">
+                        <div class="card bg-dark text-info">
+                            <img class="card-img-top" src="{{ MEDIA_URL }}{{ ad.0 }}_photo_1.png"  alt="Image not found">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ ad.1 }}</h5>
+                                <p class="card-text">Rating: {{ ad.2 }}</p>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item bg-secondary text-light">
+                                    <div class="row">
+                                        <div class="col">
+                                            Location
+                                        </div>
+                                        <div class="col">
+                                          :  {{ ad.3 }}
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-secondary text-light">
+                                    <div class="row">
+                                        <div class="col">
+                                            Institution preference
+                                        </div>
+                                        <div class="col">
+                                            : {{ ad.4 }}
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="list-group-item bg-secondary text-light">
+                                    <div class="row">
+                                        <div class="col">
+                                            Rent
+                                        </div>
+                                        <div class="col">
+                                            : {{ ad.5 }}/=
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="card-body">
+                                {% if login_status == 'true' %}
+                                    <a class="btn btn-outline-secondary btn-block" href="#">View details</a>
+                                {% else %}
+                                    <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:login_page' %}">View details</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+        {% endfor %}
+    {% endblock %}
