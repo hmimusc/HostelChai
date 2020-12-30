@@ -1,4 +1,4 @@
-from my_modules import page_works, exceptions, classes
+from my_modules import page_works, exceptions, classes, database
 from django.shortcuts import render
 from django.db import connection
 from pathlib import Path
@@ -517,6 +517,11 @@ def hostel_owner_home_page(request):
     except exceptions.LoginRequiredException:
         return login_page(request)
 
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
@@ -536,6 +541,11 @@ def add_hostel_page(request):
         page_works.request_verify(request, True)
     except exceptions.LoginRequiredException:
         return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
 
     user_dict = page_works.get_active_user(request)
 
@@ -593,6 +603,57 @@ def add_hostel(request):
     new_hostel.save()
 
     return hostel_owner_home_page(request)
+
+
+def ad_posting_page(request):
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    hostels = database.load_hostels()
+
+    hostel_id_name = []
+
+    for hostel in hostels:
+        if hostel.hostel_owner_id == user_dict['userid'] and hostel.verified == 1:
+            hostel_id_name.append(f'{hostel.hostel_id}-{hostel.hostel_name}')
+
+    data_dict = {
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'ad_posting_page',
+        'login_status': 'true',
+        'hostels': hostel_id_name,
+    }
+
+    return render(request, 'main_app/ad_posting_page.html', context=data_dict)
+
+
+def ad_posting(request):
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    # your code
+
+    # code end
+
+    return home_page(request)
 
 
 def complaint_box_page(request):

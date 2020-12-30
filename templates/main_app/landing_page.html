@@ -23,40 +23,35 @@
 
         <div class="row">
             <div class="col">
-                <div class="card text-info bg-dark">
-                    <div class="card-body">
-                        <h2 class="card-title text-center">Need a Hostel ?</h2>
+                <div class="jumbotron jumbotron_suffix text-info bg-dark">
+                    <h2 class="text-center">Need a Hostel ?</h2>
+                    <br>
+                    <p class="text-center">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. sed do eiusmod tempor incididunt ut labore et dolore magna aliquas.
+                    </p>
+
+                    <form class="form-group" action="#" method="post">
+                        {% csrf_token %}
+
                         <br>
-                        <p class="card-text text-center">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
-
-                        <form class="form-group" action="#" method="post">
-                            {% csrf_token %}
-
-                            <br>
-                            <div class="input-group">
-                                <input class="form-control bg-secondary" type="text" name="search_keywords">
-                                <div class="input-group-append">
-                                    <input class="form-control btn btn-outline-success" type="submit" value="Search">
-                                </div>
+                        <div class="input-group">
+                            <input class="form-control bg-secondary" type="text" name="search_keywords">
+                            <div class="input-group-append">
+                                <input class="form-control btn btn-outline-success" type="submit" value="Search">
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="col">
-                <div class="card text-info bg-dark">
-                    <div class="card-body">
-{#                        <h2 class="card-title text-center">Hostel Owner</h2>#}
-                        <p class="card-text text-center">
-                               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
-                        </p>
-                        <br>
-                        <a class="btn btn-outline-secondary btn-block" href="#">Register to Post</a>
-                    </div>
+                <div class="jumbotron jumbotron_suffix_unified text-info bg-dark">
+                    <p class="text-center">
+                           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+                    </p>
+                    <br>
+                    <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:registration_page' %}">Register to Post</a>
                 </div>
             </div>
         </div>
@@ -65,15 +60,11 @@
             <h2 class="text-center text-info">New to this website ?</h2>
             <p>
                 <div class="row">
-                    <div class="col-5">
-
-                    </div>
+                    <div class="col-5"></div>
                     <div class="col-2">
-                        <a class="btn btn-outline-secondary btn-block" href="#">Register</a>
+                        <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:registration_page' %}">Register</a>
                     </div>
-                    <div class="col-5">
-
-                    </div>
+                    <div class="col-5"></div>
                 </div>
             </p>
         </div>
