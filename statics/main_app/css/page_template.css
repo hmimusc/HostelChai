@@ -1,3 +1,8 @@
+body {
+    background-color: #000000;
+    background-size: cover;
+}
+
 .header{
     font-size: 3.5rem;
 }
@@ -17,7 +22,3 @@
     padding-bottom: 16px;
 }
 
-/*.bg_custom{*/
-/*    background-color: #001a3e;*/
-/*    color: #ffffff;*/
-/*}*/

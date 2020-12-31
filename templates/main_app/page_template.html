@@ -12,7 +12,6 @@
     </head>
 
     <body>
-
         <nav class="navbar navbar-expand fixed-top navbar-dark bg-dark">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'main_app:landing_page' %}"><b>HOSTEL CHAI ?</b></a>
@@ -30,7 +29,7 @@
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:requests_loader_page' %}">Approval requests</a></li>
                     {% endif %}
 
-{#                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>#}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>
                 </ul>
 
                 <ul class="navbar-nav justify-content-end">
@@ -40,10 +39,13 @@
                                 <button class="btn btn-secondary text-dark dropdown-toggle" id="logged_in_user_options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <b>{{ name }}</b>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-left bg-secondary text-dark" aria-labelledby="dropdownMenuOffset">
-                                    <a class="dropdown-item" href="#">Profile</a>
-                                    {% if user_type == "patient" %}
-                                        <a class="dropdown-item" href="{% url 'app:home_page' %}">Wallet</a>
+                                <div class="dropdown-menu dropdown-menu-left bg-secondary" aria-labelledby="dropdownMenuOffset">
+                                    {% if user_type == 'A' %}
+                                        <a class="dropdown-item" href="{% url 'main_app:profile_page' user=9 user_id=user_id %}">Profile</a>
+                                    {% elif user_type == 'S' %}
+                                        <a class="dropdown-item" href="{% url 'main_app:profile_page' user=0 user_id=user_id %}">Profile</a>
+                                    {% elif user_type == 'H' %}
+                                        <a class="dropdown-item" href="{% url 'main_app:profile_page' user=1 user_id=user_id %}">Profile</a>
                                     {% endif %}
                                     <div class="dropdown-divider bg-secondary"></div>
                                     {% if user_type == 'A' %}
@@ -67,12 +69,6 @@
         <div class="_nav_setup"></div>
 
         <div class="container">
-            <style>
-                body {
-                    background-image: url("{% static 'main_app/img/background-4.jpg' %}");
-                    background-size: cover;
-                }
-            </style>
             {% block main_block %}{% endblock %}
         </div>
 
