@@ -75,7 +75,7 @@ def get_active_user(request):
     name, username, userid = cursor.fetchall()[0]
 
     user_data = {
-        'userid': userid,
+        'user_id': userid,
         'username': username,
         'user_type': query_target.split('-')[0],
         'name': name,
