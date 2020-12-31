@@ -731,7 +731,7 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
 
     print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
 
-    # your code
+    # code Tarek Hasan
 
     # code end
 
@@ -783,7 +783,7 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # your code
+    # code Monirul Islam
 
     # code end
 
@@ -817,7 +817,7 @@ def ads_feed_page(request, page_number=0):
             'login_status': 'false',
         }
 
-    # demo code (you've to implement this part)
+    # code Sakib Mahmud
 
     # max 12 ads per page. you've to calculate total number of page
     total_page = 10
@@ -851,7 +851,7 @@ def ads_feed_page(request, page_number=0):
         ]
     ]
 
-    # demo end
+    # code end
 
     data_dict['ads'] = ads
 

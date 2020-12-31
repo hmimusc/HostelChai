@@ -398,27 +398,19 @@ class PaymentRequest(Transaction):
         pass
 
 
-class Rating:
+class HostelRating:
 
     def __init__(self):
         pass
 
 
-class HostelRating(Rating):
+class StudentRating:
 
     def __init__(self):
-        Rating.__init__(self)
         pass
 
 
-class StudentRating(Rating):
-
-    def __init__(self):
-        Rating.__init__(self)
-        pass
-
-
-class Review:
+class HostelReview:
 
     def __init__(self):
         pass
