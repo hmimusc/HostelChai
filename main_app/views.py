@@ -838,7 +838,7 @@ def ad_posting(request):
 
 
 
-def ads_feed_page(request, page_number=1):
+def ads_feed_page(request, page_number):
 
     login_status = 'true'
 
@@ -852,7 +852,6 @@ def ads_feed_page(request, page_number=1):
     if login_status == 'true':
         user_dict = page_works.get_active_user(request)
         data_dict = {
-            'user_id': user_dict['user_id'],
             'name': user_dict['name'],
             'logged_in_username': user_dict['username'],
             'user_type': user_dict['user_type'],
@@ -865,57 +864,97 @@ def ads_feed_page(request, page_number=1):
             'login_status': 'false',
         }
 
-    # code Sakib Mahmud
+    # demo code (you've to implement this part)
 
     # max 12 ads per page. you've to calculate total number of page
-    total_page = 10
+    c=f'select COUNT(ads_id) from advertise where approved like "0"'
+    cursor.execute(c)
+    c1=cursor.fetchall()
+    #print(c1[0][0])
+    rows_full=int(c1[0][0]/4)
+    #print(rows_full)
+    row_last_add=c1[0][0]%4
+    #print(row_last_add)
+    total_page = math.ceil(c1[0][0]/12)
+    co = 'select ads_id from advertise where approved=0'
+    cursor.execute(co)
+    cc=cursor.fetchall()
+    #print(cc[i][0])
+    lst = [[] for _ in range(rows_full+1)]
+    counter=0
+    for i in range(rows_full):
+        for j in range(4):
+            command = f'select ads_id,hostel_id,rent from advertise where ads_id like "{cc[counter][0]}"'
+            cursor.execute(command)
+            rem=cursor.fetchall()
+            #print(rem)
+            command1 = f'select hostel_name,thana from hostel where hostel_id like "{rem[0][1]}"'
+            cursor.execute(command1)
+            rem1=cursor.fetchall()
+            command2 = f'select institution_name from preferred_institutions where ads_id like "{rem[0][0]}"'
+            cursor.execute(command2)
+            rem2=cursor.fetchall()
+            lists=[rem[0][0], rem1[0][0], 'N/A',rem1[0][1] ,rem2[0][0],rem[0][2]]
+            lst[i].append(lists)
+            counter=counter+1
 
+    for i in range(row_last_add):
+        command = f'select ads_id,hostel_id,rent from advertise where ads_id like "{cc[counter][0]}"'
+        cursor.execute(command)
+        rem=cursor.fetchall()
+        #print(rem)
+        command1 = f'select hostel_name,thana from hostel where hostel_id like "{rem[0][1]}"'
+        cursor.execute(command1)
+        rem1=cursor.fetchall()
+        command2 = f'select institution_name from preferred_institutions where ads_id like "{rem[0][0]}"'
+        cursor.execute(command2)
+        rem2=cursor.fetchall()
+        lists=[rem[0][0], rem1[0][0], 'N/A',rem1[0][1] ,rem2[0][0],rem[0][2]]
+        lst[rows_full].append(lists)
+        counter=counter+1
     # construct a list like this
     # number of max ads per row = 4. If total ads = 40 then total row = 40/4 = 10
     # number of max row = 3
     # for each acquire following data from database
-    # idx=0: ADS_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
+    # idx=0: hostel_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
 
     # acquire the ads according to the page_number
-
-    ads = [ # demo list
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ],
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ],
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ]
-    ]
-
-    # code end
-
-    data_dict['ads'] = ads
-
-    if page_number == 0:
-        page_number = 1
-    elif page_number > total_page:
+    #for i in range(rows_full+1):
+    #    print(lst[i])
+    p1=page_number-1
+    p2=page_number*3
+    #print(lst[p2:p2+1])
+    if page_number==total_page:
+        data_dict['ads'] = lst[p1*3:len(lst)]
+    else:
+        data_dict['ads'] = lst[p1*3:p2]
+    if page_number > total_page:
         page_number = total_page
-
+    #print(f'after:{page_number}')
     pages = [[p, ''] for p in range(total_page + 1)]
 
     pages[page_number][1] = 'active'
-
-    data_dict['previous_page'] = page_number - 1
-    data_dict['next_page'] = page_number + 1
-    data_dict['pages'] = pages[1:]
-    data_dict['current_page'] = page_number
+    #print(f'page:{page_number}')
+    if page_number==1 and page_number==total_page:
+        data_dict['previous_page'] = page_number
+        data_dict['next_page'] = page_number
+        data_dict['pages'] = pages[1:]
+        data_dict['current_page'] = page_number
+    elif page_number==1:
+        data_dict['previous_page'] = page_number
+        data_dict['next_page'] = page_number + 1
+        data_dict['pages'] = pages[1:]
+        data_dict['current_page'] = page_number
+    elif page_number==total_page:
+        data_dict['previous_page'] = page_number-1
+        data_dict['next_page'] = page_number
+        data_dict['pages'] = pages[1:]
+        data_dict['current_page'] = page_number-1
+    else:
+        data_dict['previous_page'] = page_number-1
+        data_dict['next_page'] = page_number + 1
+        data_dict['pages'] = pages[1:]
+        data_dict['current_page'] = page_number
 
     return render(request, 'main_app/ads_feed_page.html', context=data_dict)
 
