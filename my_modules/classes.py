@@ -442,7 +442,6 @@ class HostelReview:
         self.hostel_id = h_id
         self.review = cursor.fetchall()[0][2]
 
-
     def create(self,data):
         self.student_id = data['student_id']
         self.hostel_id = data['hostel_id']
