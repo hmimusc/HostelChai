@@ -805,7 +805,7 @@ def ad_posting(request):
     return home_page(request)
 
 
-def ads_feed_page(request, page_number=0):
+def ads_feed_page(request, page_number=1):
 
     login_status = 'true'
 
@@ -841,28 +841,28 @@ def ads_feed_page(request, page_number=0):
     # number of max ads per row = 4. If total ads = 40 then total row = 40/4 = 10
     # number of max row = 3
     # for each acquire following data from database
-    # idx=0: hostel_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
+    # idx=0: ADS_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
 
     # acquire the ads according to the page_number
 
     ads = [ # demo list
         [
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ],
         [
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ],
         [
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ]
     ]
 
