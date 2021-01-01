@@ -130,10 +130,10 @@ class HostelOwner(User):
             'phone_number': data['phone_number'],
             'permanent_address': data['permanent_address'],
         }, {
-                        'profile_picture': files['profile_picture'],
-                        'nid': files['nid'],
-                        'birth_certificate': files['birth_certificate'],
-                    })
+            'profile_picture': files['profile_picture'],
+            'nid': files['nid'],
+            'birth_certificate': files['birth_certificate'],
+        })
 
         self.user_id = self.id
         self.occupation = data['occupation']
