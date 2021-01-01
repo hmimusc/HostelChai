@@ -729,10 +729,25 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
+    #print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
 
-    # your code
+    # code TarekHasan
+    rating = request.POST.get('rate')
+    review = request.POST.get('review')
+    # print(f'{rating} {review}')
+    data = {
+        'student_id': user_id,
+        'hostel_id': hostel_id,
+        'rating': rating,
+        'review': review,
+    }
+    new_hostel_rating = classes.HostelRating()
+    new_hostel_rating.create(data)
+    new_hostel_rating.save()
 
+    new_hostel_review = classes.HostelReview()
+    new_hostel_review.create(data)
+    new_hostel_review.save()
     # code end
 
     return student_profile_page(request, user_id)
@@ -783,7 +798,7 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # your code
+    # code Monirul Islam
 
     # code end
 
@@ -817,7 +832,7 @@ def ads_feed_page(request, page_number=0):
             'login_status': 'false',
         }
 
-    # demo code (you've to implement this part)
+    # code Sakib Mahmud
 
     # max 12 ads per page. you've to calculate total number of page
     total_page = 10
@@ -851,7 +866,7 @@ def ads_feed_page(request, page_number=0):
         ]
     ]
 
-    # demo end
+    # code end
 
     data_dict['ads'] = ads
 
