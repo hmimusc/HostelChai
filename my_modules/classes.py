@@ -295,14 +295,71 @@ class Advertise:
     def __init__(self):
         pass
 
-    def load(self):
-        pass
+    def load(self, ads_id):
+        cmd = f'SELECT * FROM advertise WHERE ads_id like "{ads_id}"'
+        cursor.execute(cmd)
 
-    def create(self):
-        pass
+        ads = cursor.fetchall()[0]
+
+        self.ads_id = ads_id
+        self.hostel_id = ads[1]
+        self.room_description = ads[2]
+        self.meal_description = ads[3]
+        self.facilities_description = ads[4]
+        self.rent = ads[5]
+        self.rules = ads[6]
+        self.conditions = ads[7]
+        self.per_room_seats = ads[8]
+        self.total_seats = ads[9]
+        self.room_photo = ads[10]
+        self.approved = ads[11]
+        self.active = ads[12]
+
+    def create(self, data, files):
+        cmd = f'SELECT COUNT(*) FROM advertise'
+        cursor.execute(cmd)
+
+        self.ads_id = cursor.fetchall()[0][0] + 1
+        self.hostel_id = data['hostel_id']
+        self.room_description = data['room_description']
+        self.meal_description = data['meal_description']
+        self.facilities_description = data['facilities_description']
+        self.rent = data['rent']
+        self.rules = data['rules']
+        self.conditions = data['conditions']
+        self.per_room_seats = data['per_room_seats']
+        self.total_seats = data['total_seats']
+        self.room_photo = f'{self.ads_id}_room_photo.png'
+        self.room_photo_2 = f'{self.ads_id}_room_photo_2.png'
+        self.room_photo_3 = f'{self.ads_id}_room_photo_3.png'
+        self.approved = 0
+        self.active = 0
+
+        self.files = {
+            'room_photo': Image.open(files['room_photo']),
+            'room_photo_2': Image.open(files['room_photo_2']),
+            'room_photo_3': Image.open(files['room_photo_3']),
+        }
+
 
     def save(self):
-        pass
+        cmd = f'SELECT COUNT(*) FROM advertise WHERE ads_id like "{self.ads_id}"'
+        cursor.execute(cmd)
+
+        ads_count = cursor.fetchall()[0][0]
+
+        if ads_count == 0:
+            self.files['room_photo'].save(f'{settings.MEDIA_ROOT}/{self.room_photo}')
+            self.files['room_photo_2'].save(f'{settings.MEDIA_ROOT}/{self.room_photo_2}')
+            self.files['room_photo_3'].save(f'{settings.MEDIA_ROOT}/{self.room_photo_3}')
+
+            cmd = f'INSERT INTO advertise(ads_id,hostel_id,room_description,meal_description,facilities_description,rent,rules,conditions,per_room_seats,total_seats,room_photo,approved,active) VALUES("{self.ads_id}","{self.hostel_id}","{self.room_description}","{self.meal_description}","{self.facilities_description}","{self.rent}","{self.rules}","{self.conditions}","{self.per_room_seats}","{self.total_seats}","{self.room_photo}","{self.approved}","{self.active}")'
+            print(cmd)
+        else:
+            cmd = f'UPDATE advertise SET hostel_id="{self.hostel_id}", room_description="{self.room_description}", meal_description="{self.meal_description}", facilities_description="{self.facilities_description}", rent="{self.rent}", rules="{self.rules}", conditions="{self.conditions}", per_room_seats="{self.per_room_seats}", total_seats="{self.total_seats}", room_photo="{self.room_photo}", approved="{self.approved}", active="{self.active}" WHERE ads_id="{self.ads_id}"'
+
+        cursor.execute(cmd)
+
 
 
 class Complaint:

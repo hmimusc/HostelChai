@@ -657,9 +657,41 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # your code
+    # coding part(monir) starts
 
-    # code end
+    hostel = request.POST.get('hostel').split()[0]
+    #print(hostel)
+    total_seats = request.POST.get('total_seats')
+    per_room_seats = request.POST.get('per_room_seats')
+    rent = request.POST.get('rent')
+    room_description = request.POST.get('room_description')
+    meal_description = request.POST.get('meal_description')
+    facility_description = request.POST.get('facility_description')
+    rules = request.POST.get('rules')
+    conditions = request.POST.get('conditions')
+
+    new_advertise = classes.Advertise()
+    new_advertise.create({
+            'hostel_id': hostel,
+            'room_description': room_description,
+            'meal_description': meal_description,
+            'facilities_description': facility_description,
+            'rent': rent,
+            'rules': rules,
+            'conditions': conditions,
+            'per_room_seats': per_room_seats,
+            'total_seats': total_seats,
+        }, {
+            'room_photo': request.FILES['room_photo_1'],
+            'room_photo_2': request.FILES['room_photo_2'],
+            'room_photo_3': request.FILES['room_photo_3'],
+        }
+
+    )
+
+    new_advertise.save()
+
+    # coding part(monir) ends
 
     return home_page(request)
 
