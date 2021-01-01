@@ -4,19 +4,19 @@
     {% load static %}
 
     {% block title %}
-        Hostel Chai
+        Hostel Chai ?
     {% endblock %}
 
     {% block my_stylesheet %}
-        <link rel="stylesheet" href="{% static "main_app/stylesheets/hostel_owner_home_page.css" %}">
+        <link rel="stylesheet" href="{% static "main_app/stylesheets/admin_profile_page.css" %}">
     {% endblock %}
 
     {% block my_js %}
-        <script src="{% static "main_app/js/hostel_owner_home_page.js" %}"></script>
+        <script src="{% static "main_app/js/admin_profile_page.js" %}"></script>
     {% endblock %}
 
     {% block main_block %}
         <div class="jumbotron jumbotron_suffix_unified bg-secondary">
-            <h1 class="text-center text-dark header">Welcome {{ name }}</h1>
+            <h1 class="text-center text-dark header">Profile</h1>
         </div>
     {% endblock %}

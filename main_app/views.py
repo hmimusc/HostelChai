@@ -21,6 +21,8 @@ def test_page(request):
     user_dict = page_works.get_active_user(request)
 
     try:
+        data_dict['user_id'] = user_dict['user_id']
+        data_dict['name'] = user_dict['name']
         data_dict['user_type'] = user_dict['user_type']
         data_dict['login_status'] = 'true'
     except KeyError:
@@ -117,6 +119,7 @@ def requests_loader_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -195,6 +198,7 @@ def hostel_loader_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -388,6 +392,7 @@ def login(request):
         cookie_expires = cookie_expires.strftime("%a, %d-%b-%Y %H:%M:%S GMT")
 
         data_dict = {
+            'user_id': user_id,
             'name': name,
             'logged_in_username': username,
             'user_type': user,
@@ -483,6 +488,7 @@ def admin_home_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -508,6 +514,7 @@ def student_home_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -533,6 +540,7 @@ def hostel_owner_home_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -541,6 +549,101 @@ def hostel_owner_home_page(request):
     }
 
     return render(request, 'main_app/hostel_owner_home_page.html', context=data_dict)
+
+
+def profile_page(request, user, user_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    if user == 0:
+        return student_profile_page(request, user_id)
+    elif user == 1:
+        return hostel_owner_profile_page(request, user_id)
+    elif user == 9:
+        return admin_profile_page(request, user_id)
+
+
+def admin_profile_page(request, user_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_profile_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/admin_profile_page.html', context=data_dict)
+
+
+def student_profile_page(request, user_id):
+
+    try:
+        page_works.user_verify(request, 'S')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'student_profile_page',
+        'login_status': 'true',
+
+        'hostel_photo': 'HOS-4_photo_1.png',
+        'hostel_id': 'HOS-1',
+        'hostel_name': 'Test Hostel',
+        'hostel_rating': '8.2',
+        'hostel_location': 'Mirpur',
+        'hostel_contact': '+8801521579865',
+    }
+
+    return render(request, 'main_app/student_profile_page.html', context=data_dict)
+
+
+def hostel_owner_profile_page(request, user_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'H')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'hostel_owner_profile_page',
+        'login_status': 'true',
+    }
+
+    return render(request, 'main_app/hostel_owner_profile_page.html', context=data_dict)
 
 
 def add_hostel_page(request):
@@ -558,6 +661,7 @@ def add_hostel_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -586,7 +690,7 @@ def add_hostel(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    hostel_owner_id = page_works.get_active_user(request)['userid']
+    hostel_owner_id = page_works.get_active_user(request)['user_id']
     name = request.POST.get('name')
     thana = request.POST.get('thana')
     postal_code = request.POST.get('postal_code')
@@ -613,6 +717,42 @@ def add_hostel(request):
     return hostel_owner_home_page(request)
 
 
+def process_hostel_review_and_rating(request, user_id, hostel_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'S')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    #print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
+
+    # code TarekHasan
+    rating = request.POST.get('rate')
+    review = request.POST.get('review')
+    # print(f'{rating} {review}')
+    data = {
+        'student_id': user_id,
+        'hostel_id': hostel_id,
+        'rating': rating,
+        'review': review,
+    }
+    new_hostel_rating = classes.HostelRating()
+    new_hostel_rating.create(data)
+    new_hostel_rating.save()
+
+    new_hostel_review = classes.HostelReview()
+    new_hostel_review.create(data)
+    new_hostel_review.save()
+    # code end
+
+    return student_profile_page(request, user_id)
+
+
 def ad_posting_page(request):
     try:
         page_works.request_verify(request, True)
@@ -631,10 +771,11 @@ def ad_posting_page(request):
     hostel_id_name = []
 
     for hostel in hostels:
-        if hostel.hostel_owner_id == user_dict['userid'] and hostel.verified == 1:
+        if hostel.hostel_owner_id == user_dict['user_id'] and hostel.verified == 1:
             hostel_id_name.append(f'{hostel.hostel_id} {hostel.hostel_name}')
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -657,46 +798,14 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # coding part(monir) starts
+    # code Monirul Islam
 
-    hostel = request.POST.get('hostel').split()[0]
-    #print(hostel)
-    total_seats = request.POST.get('total_seats')
-    per_room_seats = request.POST.get('per_room_seats')
-    rent = request.POST.get('rent')
-    room_description = request.POST.get('room_description')
-    meal_description = request.POST.get('meal_description')
-    facility_description = request.POST.get('facility_description')
-    rules = request.POST.get('rules')
-    conditions = request.POST.get('conditions')
-
-    new_advertise = classes.Advertise()
-    new_advertise.create({
-            'hostel_id': hostel,
-            'room_description': room_description,
-            'meal_description': meal_description,
-            'facilities_description': facility_description,
-            'rent': rent,
-            'rules': rules,
-            'conditions': conditions,
-            'per_room_seats': per_room_seats,
-            'total_seats': total_seats,
-        }, {
-            'room_photo': request.FILES['room_photo_1'],
-            'room_photo_2': request.FILES['room_photo_2'],
-            'room_photo_3': request.FILES['room_photo_3'],
-        }
-
-    )
-
-    new_advertise.save()
-
-    # coding part(monir) ends
+    # code end
 
     return home_page(request)
 
 
-def ads_feed_page(request, page_number=0):
+def ads_feed_page(request, page_number=1):
 
     login_status = 'true'
 
@@ -710,6 +819,7 @@ def ads_feed_page(request, page_number=0):
     if login_status == 'true':
         user_dict = page_works.get_active_user(request)
         data_dict = {
+            'user_id': user_dict['user_id'],
             'name': user_dict['name'],
             'logged_in_username': user_dict['username'],
             'user_type': user_dict['user_type'],
@@ -722,7 +832,7 @@ def ads_feed_page(request, page_number=0):
             'login_status': 'false',
         }
 
-    # demo code (you've to implement this part)
+    # code Sakib Mahmud
 
     # max 12 ads per page. you've to calculate total number of page
     total_page = 10
@@ -731,33 +841,32 @@ def ads_feed_page(request, page_number=0):
     # number of max ads per row = 4. If total ads = 40 then total row = 40/4 = 10
     # number of max row = 3
     # for each acquire following data from database
-    # idx=0: hostel_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
+    # idx=0: ADS_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
 
     # acquire the ads according to the page_number
 
     ads = [ # demo list
         [
-
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ],
         [
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ],
         [
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['HOS-4', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
+            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
         ]
     ]
 
-    # demo end
+    # code end
 
     data_dict['ads'] = ads
 
@@ -788,6 +897,7 @@ def complaint_box_page(request):
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
+        'user_id': user_dict['user_id'],
         'name': user_dict['name'],
         'logged_in_username': user_dict['username'],
         'user_type': user_dict['user_type'],
@@ -810,7 +920,7 @@ def complaint_box(request):
     except exceptions.LoginRequiredException:
         return login_page(request)
 
-    user_id = page_works.get_active_user(request)['userid']
+    user_id = page_works.get_active_user(request)['user_id']
     subject = request.POST.get('subject')
     complaint = request.POST.get('details')
 
