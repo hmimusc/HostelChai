@@ -70,41 +70,41 @@ class User:
 
         if user_count == 0:
             command = (
-                f'insert into user values (' +
-                f'"{self.id}", ' +
-                f'"{self.name}", ' +
-                f'"{self.username}", ' +
-                f'"{self.password}", ' +
-                f'"{self.profile_picture}", ' +
-                f'"{self.dob}", ' +
-                f'"{self.nid}", ' +
-                f'"{self.birth_certificate}", ' +
-                f'"{self.gender}", ' +
-                f'"{self.phone_number}", ' +
-                f'"{self.email}", ' +
-                f'"{self.permanent_address}", ' +
-                f'{self.verified}, ' +
-                f'{self.user_type}' +
-                f')'
+                    f'insert into user values (' +
+                    f'"{self.id}", ' +
+                    f'"{self.name}", ' +
+                    f'"{self.username}", ' +
+                    f'"{self.password}", ' +
+                    f'"{self.profile_picture}", ' +
+                    f'"{self.dob}", ' +
+                    f'"{self.nid}", ' +
+                    f'"{self.birth_certificate}", ' +
+                    f'"{self.gender}", ' +
+                    f'"{self.phone_number}", ' +
+                    f'"{self.email}", ' +
+                    f'"{self.permanent_address}", ' +
+                    f'{self.verified}, ' +
+                    f'{self.user_type}' +
+                    f')'
             )
             cursor.execute(command)
         else:
             command = (
-                f'update user set ' +
-                f'id="{self.id}", ' +
-                f'name="{self.name}", ' +
-                f'username="{self.username}", ' +
-                f'password="{self.password}", ' +
-                f'profile_picture="{self.profile_picture}", ' +
-                f'dob="{self.dob}", ' +
-                f'nid="{self.nid}", ' +
-                f'birth_certificate="{self.birth_certificate}", ' +
-                f'gender="{self.gender}", ' +
-                f'phone_number="{self.phone_number}", ' +
-                f'email="{self.email}", ' +
-                f'permanent_address="{self.permanent_address}", ' +
-                f'verified={self.verified}, ' +
-                f'user_type={self.user_type}'
+                    f'update user set ' +
+                    f'id="{self.id}", ' +
+                    f'name="{self.name}", ' +
+                    f'username="{self.username}", ' +
+                    f'password="{self.password}", ' +
+                    f'profile_picture="{self.profile_picture}", ' +
+                    f'dob="{self.dob}", ' +
+                    f'nid="{self.nid}", ' +
+                    f'birth_certificate="{self.birth_certificate}", ' +
+                    f'gender="{self.gender}", ' +
+                    f'phone_number="{self.phone_number}", ' +
+                    f'email="{self.email}", ' +
+                    f'permanent_address="{self.permanent_address}", ' +
+                    f'verified={self.verified}, ' +
+                    f'user_type={self.user_type}'
             )
             cursor.execute(command)
 
@@ -130,10 +130,10 @@ class HostelOwner(User):
             'phone_number': data['phone_number'],
             'permanent_address': data['permanent_address'],
         }, {
-            'profile_picture': files['profile_picture'],
-            'nid': files['nid'],
-            'birth_certificate': files['birth_certificate'],
-        })
+                        'profile_picture': files['profile_picture'],
+                        'nid': files['nid'],
+                        'birth_certificate': files['birth_certificate'],
+                    })
 
         self.user_id = self.id
         self.occupation = data['occupation']
@@ -153,11 +153,11 @@ class HostelOwner(User):
             cursor.execute(command)
         else:
             command = (
-                f'update hostel_owner set ' +
-                f'user_id={self.user_id} ' +
-                f'occupation={self.occupation} ' +
-                f'due={self.due} ' +
-                f'verified={self.verified}'
+                    f'update hostel_owner set ' +
+                    f'user_id={self.user_id} ' +
+                    f'occupation={self.occupation} ' +
+                    f'due={self.due} ' +
+                    f'verified={self.verified}'
             )
             cursor.execute(command)
 
@@ -183,10 +183,10 @@ class Student(User):
             'phone_number': data['phone_number'],
             'permanent_address': data['permanent_address'],
         }, {
-            'profile_picture': files['profile_picture'],
-            'nid': files['nid'],
-            'birth_certificate': files['birth_certificate'],
-        })
+                        'profile_picture': files['profile_picture'],
+                        'nid': files['nid'],
+                        'birth_certificate': files['birth_certificate'],
+                    })
 
         self.user_id = self.id
         self.institution = data['institution']
@@ -204,22 +204,22 @@ class Student(User):
 
         if student_count == 0:
             command = (
-                f'insert into student(user_id, institution, degree, student_id) values ( ' +
-                f'"{self.user_id}", ' +
-                f'"{self.institution}", ' +
-                f'"{self.degree}", ' +
-                f'"{self.student_id}" ' +
-                f')'
+                    f'insert into student(user_id, institution, degree, student_id) values ( ' +
+                    f'"{self.user_id}", ' +
+                    f'"{self.institution}", ' +
+                    f'"{self.degree}", ' +
+                    f'"{self.student_id}" ' +
+                    f')'
             )
             cursor.execute(command)
         else:
             command = (
-                f'update student set ' +
-                f'user_id="{self.user_id}"' +
-                f'institution="{self.institution}" ' +
-                f'degree="{self.degree}" ' +
-                f'student_id="{self.student_id}" ' +
-                f'current_hostel_id="{self.current_hostel_id}"'
+                    f'update student set ' +
+                    f'user_id="{self.user_id}"' +
+                    f'institution="{self.institution}" ' +
+                    f'degree="{self.degree}" ' +
+                    f'student_id="{self.student_id}" ' +
+                    f'current_hostel_id="{self.current_hostel_id}"'
             )
             cursor.execute(command)
 
@@ -403,6 +403,25 @@ class HostelRating:
     def __init__(self):
         pass
 
+    def load(self, s_id, h_id):
+        command = f"SELECT * FROM rating_hostel WHERE (student_id,hostel_id) = ('{s_id}','{h_id}')"
+        cursor.execute(command)
+
+        self.student_id = s_id
+        self.hostel_id = h_id
+        self.rating = cursor.fetchall()[0][2]
+
+    def create(self, data):
+        self.student_id = data['student_id']
+        self.hostel_id = data['hostel_id']
+        self.rating = data['rating']
+
+    def save(self):
+        command = f"DELETE FROM rating_hostel WHERE (student_id,hostel_id) = ('{self.student_id}','{self.hostel_id}')"
+        cursor.execute(command)
+        command = f"INSERT INTO rating_hostel VALUES ('{self.student_id}','{self.hostel_id}',{self.rating})"
+        cursor.execute(command)
+
 
 class StudentRating:
 
@@ -414,3 +433,24 @@ class HostelReview:
 
     def __init__(self):
         pass
+
+    def load(self, s_id, h_id):
+        command = f"SELECT * FROM review WHERE (hostel_id, student_id) = ('{h_id}','{s_id}')"
+        cursor.execute(command)
+
+        self.student_id = s_id
+        self.hostel_id = h_id
+        self.review = cursor.fetchall()[0][2]
+
+
+    def create(self,data):
+        self.student_id = data['student_id']
+        self.hostel_id = data['hostel_id']
+        self.review = data['review']
+
+    def save(self):
+        command = f"DELETE FROM review WHERE (student_id,hostel_id) = ('{self.student_id}','{self.hostel_id}')"
+        cursor.execute(command)
+        command = f"INSERT INTO review VALUES ('{self.hostel_id}','{self.student_id}','{self.review}')"
+        cursor.execute(command)
+
