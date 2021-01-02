@@ -7,7 +7,10 @@ django.setup()
 
 from django.db import connection
 from django.conf import settings
+import math
 from PIL import Image
+
+from . import database
 
 cursor = connection.cursor()
 
@@ -303,27 +306,33 @@ class Advertise:
 
         self.ads_id = ads_id
         self.hostel_id = ads[1]
-        self.room_description = ads[2]
-        self.meal_description = ads[3]
-        self.facilities_description = ads[4]
-        self.rent = ads[5]
-        self.rules = ads[6]
-        self.conditions = ads[7]
-        self.per_room_seats = ads[8]
-        self.total_seats = ads[9]
-        self.room_photo = ads[10]
-        self.approved = ads[11]
-        self.active = ads[12]
+        self.room_description = ads[3]
+        self.meal_description = ads[4]
+        self.facilities_description = ads[5]
+        self.preferred_institutions = InstitutionPreference(self.ads_id)
+        self.preferred_institutions.load()
+        self.rent = ads[6]
+        self.rules = ads[7]
+        self.conditions = ads[8]
+        self.per_room_seats = ads[9]
+        self.total_seats = ads[10]
+        self.room_photo = ads[11]
+        self.approved = ads[12]
+        self.active = ads[13]
 
     def create(self, data, files):
         cmd = f'SELECT COUNT(*) FROM advertise'
         cursor.execute(cmd)
 
-        self.ads_id = cursor.fetchall()[0][0] + 1
+        self.ads_id = f'ADS-{cursor.fetchall()[0][0] + 1}'
         self.hostel_id = data['hostel_id']
         self.room_description = data['room_description']
         self.meal_description = data['meal_description']
         self.facilities_description = data['facilities_description']
+
+        self.preferred_institutions = InstitutionPreference(self.ads_id)
+        self.preferred_institutions.add_institution(data['preferred_institutions'])
+
         self.rent = data['rent']
         self.rules = data['rules']
         self.conditions = data['conditions']
@@ -341,7 +350,6 @@ class Advertise:
             'room_photo_3': Image.open(files['room_photo_3']),
         }
 
-
     def save(self):
         cmd = f'SELECT COUNT(*) FROM advertise WHERE ads_id like "{self.ads_id}"'
         cursor.execute(cmd)
@@ -354,13 +362,122 @@ class Advertise:
             self.files['room_photo_3'].save(f'{settings.MEDIA_ROOT}/{self.room_photo_3}')
 
             cmd = f'INSERT INTO advertise(ads_id,hostel_id,room_description,meal_description,facilities_description,rent,rules,conditions,per_room_seats,total_seats,room_photo,approved,active) VALUES("{self.ads_id}","{self.hostel_id}","{self.room_description}","{self.meal_description}","{self.facilities_description}","{self.rent}","{self.rules}","{self.conditions}","{self.per_room_seats}","{self.total_seats}","{self.room_photo}","{self.approved}","{self.active}")'
-            print(cmd)
         else:
             cmd = f'UPDATE advertise SET hostel_id="{self.hostel_id}", room_description="{self.room_description}", meal_description="{self.meal_description}", facilities_description="{self.facilities_description}", rent="{self.rent}", rules="{self.rules}", conditions="{self.conditions}", per_room_seats="{self.per_room_seats}", total_seats="{self.total_seats}", room_photo="{self.room_photo}", approved="{self.approved}", active="{self.active}" WHERE ads_id="{self.ads_id}"'
+
+        self.preferred_institutions.save()
 
         cursor.execute(cmd)
 
 
+class InstitutionPreference:
+
+    def __init__(self, ads_id):
+        self.ads_id = ads_id
+        self.institutions = []
+
+    def load(self):
+
+        command = f'select institution_name from preferred_institutions where ads_id like "{self.ads_id}"'
+        cursor.execute(command)
+
+        self.institutions = [ins[0] for ins in cursor.fetchall()]
+
+    def add_institution(self, institution_names):
+
+        if len(self.institutions) > 0 and self.institutions[0] == '<No-preference>':
+            self.institutions = []
+
+        for institution_name in institution_names:
+            self.institutions.append(institution_name)
+
+    def save(self):
+
+        if self.institutions[0] != '<No-preference>':
+
+            command = f'delete from preferred_institutions where ads_id like "{self.ads_id}"'
+            cursor.execute(command)
+
+            command = 'insert into preferred_institutions values '
+            for i in range(len(self.institutions)):
+                command += f'("{self.ads_id}", "{self.institutions[i]}")'
+                if i == len(self.institutions) - 1:
+                    command += ' '
+                else:
+                    command += ', '
+
+            cursor.execute(command)
+
+
+class AdsFeed:
+
+    def __init__(self):
+
+        all_ads = database.load_advertisements()
+
+        self.ads_for_feed = []
+
+        for ad in all_ads:
+            if ad.approved == 1 and ad.active == 1:
+                print(f'ap_ac: {ad.approved}_{ad.active}')
+                self.ads_for_feed.append(ad)
+
+    def get_feed_data_for(self, page_number):
+
+        if page_number == 0:
+            page_number = 1
+
+        if len(self.ads_for_feed) == 0:
+            print(f'ads_for_feed: {len(self.ads_for_feed)}')
+            return {
+                'previous_page': page_number + 1,
+                'current_page': page_number - 1,
+                'next_page': page_number,
+                'pages': [[1, 'active']],
+            }
+
+        total_pages = math.ceil(len(self.ads_for_feed)/12)
+        number_of_ads_at_last_page = len(self.ads_for_feed) % 12
+
+        if page_number > total_pages:
+            page_number = total_pages
+
+        ads_to_show_start_idx = (page_number - 1) * 12
+
+        ads_to_show_end_idx = -1
+        if page_number == total_pages:
+            ads_to_show_end_idx += number_of_ads_at_last_page
+        else:
+            ads_to_show_end_idx += 12
+
+        ads = [[], [], []]
+
+        # [ads_id, hostel_name, rating, thana, ins_pref, rent]
+
+        for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx + 1]:
+
+            hostel = Hostel()
+            hostel.load(self.ads_for_feed[i].hostel_id)
+
+            ads[math.floor((i-ads_to_show_start_idx)/4)].append([
+                self.ads_for_feed[i].ads_id,
+                hostel.hostel_name,
+                'N/A',
+                hostel.thana,
+                self.ads_for_feed[i].preferred_institutions.institutions[0],
+                self.ads_for_feed[i].rent,
+            ])
+
+        pages = [[p, ''] for p in range(total_pages + 1)]
+        pages[page_number][1] = 'active'
+
+        return {
+            'previous_page': page_number + 1,
+            'current_page': page_number - 1,
+            'next_page': page_number,
+            'pages': pages[1:],
+            'ads': ads,
+        }
 
 
 class Complaint:

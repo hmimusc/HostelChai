@@ -82,6 +82,19 @@
 
                 <br>
 
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Preferred Institution:</span>
+                    </div>
+                    <select class="custom-select" name="preferred_institution">
+                        {% for ins_name in ins_names %}
+                            <option value="{{ ins_name }}">{{ ins_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <br>
+
                 <div class="row">
                     <div class="col">
                         <label class="text-secondary" for="rules">Rules:</label>

@@ -1,15 +1,5 @@
 
-def process_path_to_save(path):
-    path = path.split()
-    for i in range(len(path)):
-        if path[i] == '\\':
-            path[i] = '/'
-
-
-def process_path_to_use(path):
-    path = path.split()
-    for i in range(len(path)):
-        if path[i] == '/':
-            path[i] = '\\'
-
-    return path.join()
+def add_dictionary(dict_1, dict_2):
+    for key in dict_2.keys():
+        dict_1[key] = dict_2[key]
+    return dict_1

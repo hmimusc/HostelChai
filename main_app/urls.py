@@ -36,6 +36,7 @@ urlpatterns = [
     path('ad_posting_page/', views.ad_posting_page, name='ad_posting_page'),
     path('ad_posting/', views.ad_posting, name='ad_posting'),
     path('ads_feed_page/<int:page_number>/', views.ads_feed_page, name='ads_feed_page'),
+    # path('ads_feed_page/<int:page_number>/', views.ads_feed_page_old, name='ads_feed_page'),
     path('complaint_box_page/', views.complaint_box_page, name='complaint_box_page'),
     path('complaint_box/', views.complaint_box, name='complaint_box'),
     path('test_page/', views.test_page, name='test_page'),
