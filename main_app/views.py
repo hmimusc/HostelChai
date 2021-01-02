@@ -3,9 +3,7 @@ from django.shortcuts import render
 from django.db import connection
 from pathlib import Path
 import datetime
-import math
 import os
-import math
 
 cursor = connection.cursor()
 
