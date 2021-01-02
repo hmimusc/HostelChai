@@ -524,7 +524,7 @@ class AdsFeed:
             ads[math.floor((i-ads_to_show_start_idx)/4)].append([
                 self.ads_for_feed[i].ads_id,
                 hostel.hostel_name,
-                hostel.rating,
+                hostel.rating if hostel.rating != -1 else 'UNRATED',
                 hostel.thana,
                 self.ads_for_feed[i].preferred_institutions.institutions[0],
                 self.ads_for_feed[i].rent,
