@@ -188,10 +188,9 @@ class HostelOwner(User):
         else:
             command = (
                 f'update hostel_owner set ' +
-                f'user_id={self.user_id}, ' +
-                f'occupation={self.occupation}, ' +
+                f'occupation="{self.occupation}", ' +
                 f'due={self.due}, ' +
-                f'verified={self.verified} ' +
+                f'active={self.verified} ' +
                 f'where user_id like "{self.user_id}"'
             )
             cursor.execute(command)
