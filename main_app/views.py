@@ -163,9 +163,11 @@ def requests_loader(request):
     req_type = request.POST.get('req_type')
 
     if req_type == 'hostels':
-        return hostel_loader_page(request)
+        return hostel_approval_page(request)
     elif req_type == 'ads':
         return ad_approval_page(request)
+    elif req_type == 'users':
+        return user_approval_page(request)
     else:
         return home_page(request)
 
@@ -219,7 +221,7 @@ def approve_ad(request, ads_id):
     return requests_loader_page(request)
 
 
-def hostel_loader_page(request):
+def hostel_approval_page(request):
 
     try:
         page_works.request_verify(request, True)
@@ -266,7 +268,7 @@ def hostel_loader_page(request):
         'hostel_document': hostel.hostel_document,
     }
 
-    return render(request, 'main_app/hostel_loader_page.html', context=data_dict)
+    return render(request, 'main_app/hostel_approval_page.html', context=data_dict)
 
 
 def approve_hostel(request):
@@ -285,7 +287,64 @@ def approve_hostel(request):
     command = f'update hostel set verified=1, active=1 where hostel_id like "{hostel_id}"'
     cursor.execute(command)
 
-    return hostel_owner_home_page(request)
+    return requests_loader_page(request)
+
+
+def user_approval_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+
+        'user_id_': request.POST.get('user_id'),
+        'user_type_': 0 if request.POST.get('user_id').split('-')[0] == 'S' else 1,
+    }
+
+    return render(request, 'main_app/user_approval_page.html', context=data_dict)
+
+
+def approve_user(request, user_id, user_type):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    if user_type == 0:
+        student = classes.Student()
+        student.load_student(user_id)
+        student.verified = 1
+        student.active = 1
+        student.save_student()
+    else:
+        hostel_owner = classes.HostelOwner()
+        hostel_owner.load_hostel_owner(user_id)
+        hostel_owner.verified = 1
+        hostel_owner.active = 1
+        hostel_owner.save_hostel_owner()
+
+    return requests_loader_page(request)
 
 
 def registration_page(request):
