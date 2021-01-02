@@ -188,10 +188,9 @@ class HostelOwner(User):
         else:
             command = (
                 f'update hostel_owner set ' +
-                f'user_id={self.user_id}, ' +
-                f'occupation={self.occupation}, ' +
+                f'occupation="{self.occupation}", ' +
                 f'due={self.due}, ' +
-                f'verified={self.verified} ' +
+                f'active={self.verified} ' +
                 f'where user_id like "{self.user_id}"'
             )
             cursor.execute(command)
@@ -205,7 +204,7 @@ class Student(User):
     def load_student(self, user_id):
         User.load(self, user_id)
 
-        command = f'select * from student'
+        command = f'select * from student where user_id like "{user_id}"'
         cursor.execute(command)
 
         data = cursor.fetchall()[0]
