@@ -7,7 +7,10 @@ django.setup()
 
 from django.db import connection
 from django.conf import settings
+import math
 from PIL import Image
+
+from . import database, exceptions
 
 cursor = connection.cursor()
 
@@ -18,7 +21,25 @@ class User:
         pass
 
     def load(self, user_id):
-        pass
+        command = f'select * from user where id like "{user_id}"'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.id = data[0]
+        self.name = data[1]
+        self.username = data[2]
+        self.password = data[3]
+        self.profile_picture = data[4]
+        self.dob = data[5]
+        self.nid = data[6]
+        self.birth_certificate = data[7]
+        self.gender = data[8]
+        self.phone_number = data[9]
+        self.email = data[10]
+        self.permanent_address = data[11]
+        self.verified = data[12]
+        self.user_type = data[13]
 
     def create(self, user_type, data, files):
 
@@ -113,10 +134,19 @@ class HostelOwner(User):
 
     def __init__(self):
         User.__init__(self)
-        pass
 
     def load_hostel_owner(self, user_id):
-        pass
+        User.load(self, user_id)
+
+        command = f'select * from hostel_owner where user_id like "{user_id}"'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.user_id = self.id
+        self.occupation = data[1]
+        self.due = data[2]
+        self.active = data[3]
 
     def create_hostel_owner(self, data, files):
 
@@ -166,10 +196,20 @@ class Student(User):
 
     def __init__(self):
         User.__init__(self)
-        pass
 
     def load_student(self, user_id):
-        pass
+        User.load(self, user_id)
+
+        command = f'select * from student'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.user_id = self.id
+        self.institution = data[1]
+        self.degree = data[2]
+        self.student_id = data[3]
+        self.current_hostel_id = data[4]
 
     def create_student(self, data, files):
 
@@ -233,7 +273,10 @@ class Hostel:
         command = f'select * from hostel where hostel_id like "{hostel_id}"'
         cursor.execute(command)
 
-        hostel = cursor.fetchall()[0]
+        try:
+            hostel = cursor.fetchall()[0]
+        except IndexError:
+            raise exceptions.HostelNotFoundException
 
         self.hostel_id = hostel_id
         self.hostel_owner_id = hostel[1]
@@ -247,6 +290,17 @@ class Hostel:
         self.photo = hostel[9]
         self.verified = hostel[10]
         self.active = hostel[11]
+
+        self.rating = -1
+
+        hostel_ratings = database.load_hostel_ratings()
+        if len(hostel_ratings) != 0:
+            self.rating = 0
+            for rating in hostel_ratings:
+                self.rating += rating.rating
+            self.rating = round(self.rating/len(hostel_ratings), 1)
+
+        self.reviews = []
 
     def create(self, data, files):
 
@@ -265,6 +319,9 @@ class Hostel:
         self.photo = f'{self.hostel_owner_id}_{self.hostel_id}_photo.png'
         self.verified = 0
         self.active = 0
+
+        self.rating = -1
+        self.reviews = []
 
         self.files = {
             'electricity_bill': Image.open(files['electricity_bill']),
@@ -295,14 +352,186 @@ class Advertise:
     def __init__(self):
         pass
 
-    def load(self):
-        pass
+    def load(self, ads_id):
+        cmd = f'SELECT * FROM advertise WHERE ads_id like "{ads_id}"'
+        cursor.execute(cmd)
 
-    def create(self):
-        pass
+        ads = cursor.fetchall()[0]
+
+        self.ads_id = ads_id
+        self.hostel_id = ads[1]
+        self.room_description = ads[3]
+        self.meal_description = ads[4]
+        self.facilities_description = ads[5]
+        self.preferred_institutions = InstitutionPreference(self.ads_id)
+        self.preferred_institutions.load()
+        self.rent = ads[6]
+        self.rules = ads[7]
+        self.conditions = ads[8]
+        self.per_room_seats = ads[9]
+        self.total_seats = ads[10]
+        self.room_photo = ads[11]
+        self.approved = ads[12]
+        self.active = ads[13]
+
+    def create(self, data, files):
+        cmd = f'SELECT COUNT(*) FROM advertise'
+        cursor.execute(cmd)
+
+        self.ads_id = f'ADS-{cursor.fetchall()[0][0] + 1}'
+        self.hostel_id = data['hostel_id']
+        self.room_description = data['room_description']
+        self.meal_description = data['meal_description']
+        self.facilities_description = data['facilities_description']
+
+        self.preferred_institutions = InstitutionPreference(self.ads_id)
+        self.preferred_institutions.add_institution(data['preferred_institutions'])
+
+        self.rent = data['rent']
+        self.rules = data['rules']
+        self.conditions = data['conditions']
+        self.per_room_seats = data['per_room_seats']
+        self.total_seats = data['total_seats']
+        self.room_photo = f'{self.ads_id}_room_photo.png'
+        self.room_photo_2 = f'{self.ads_id}_room_photo_2.png'
+        self.room_photo_3 = f'{self.ads_id}_room_photo_3.png'
+        self.approved = 0
+        self.active = 0
+
+        self.files = {
+            'room_photo': Image.open(files['room_photo']),
+            'room_photo_2': Image.open(files['room_photo_2']),
+            'room_photo_3': Image.open(files['room_photo_3']),
+        }
 
     def save(self):
-        pass
+        cmd = f'SELECT COUNT(*) FROM advertise WHERE ads_id like "{self.ads_id}"'
+        cursor.execute(cmd)
+
+        ads_count = cursor.fetchall()[0][0]
+
+        if ads_count == 0:
+            self.files['room_photo'].save(f'{settings.MEDIA_ROOT}/{self.room_photo}')
+            self.files['room_photo_2'].save(f'{settings.MEDIA_ROOT}/{self.room_photo_2}')
+            self.files['room_photo_3'].save(f'{settings.MEDIA_ROOT}/{self.room_photo_3}')
+
+            cmd = f'INSERT INTO advertise(ads_id,hostel_id,room_description,meal_description,facilities_description,rent,rules,conditions,per_room_seats,total_seats,room_photo,approved,active) VALUES("{self.ads_id}","{self.hostel_id}","{self.room_description}","{self.meal_description}","{self.facilities_description}","{self.rent}","{self.rules}","{self.conditions}","{self.per_room_seats}","{self.total_seats}","{self.room_photo}","{self.approved}","{self.active}")'
+        else:
+            cmd = f'UPDATE advertise SET hostel_id="{self.hostel_id}", room_description="{self.room_description}", meal_description="{self.meal_description}", facilities_description="{self.facilities_description}", rent="{self.rent}", rules="{self.rules}", conditions="{self.conditions}", per_room_seats="{self.per_room_seats}", total_seats="{self.total_seats}", room_photo="{self.room_photo}", approved="{self.approved}", active="{self.active}" WHERE ads_id="{self.ads_id}"'
+
+        self.preferred_institutions.save()
+
+        cursor.execute(cmd)
+
+
+class InstitutionPreference:
+
+    def __init__(self, ads_id):
+        self.ads_id = ads_id
+        self.institutions = []
+
+    def load(self):
+
+        command = f'select institution_name from preferred_institutions where ads_id like "{self.ads_id}"'
+        cursor.execute(command)
+
+        self.institutions = [ins[0] for ins in cursor.fetchall()]
+
+    def add_institution(self, institution_names):
+
+        if len(self.institutions) > 0 and self.institutions[0] == '<No-preference>':
+            self.institutions = []
+
+        for institution_name in institution_names:
+            self.institutions.append(institution_name)
+
+    def save(self):
+
+        if self.institutions[0] != '<No-preference>':
+
+            command = f'delete from preferred_institutions where ads_id like "{self.ads_id}"'
+            cursor.execute(command)
+
+            command = 'insert into preferred_institutions values '
+            for i in range(len(self.institutions)):
+                command += f'("{self.ads_id}", "{self.institutions[i]}")'
+                if i == len(self.institutions) - 1:
+                    command += ' '
+                else:
+                    command += ', '
+
+            cursor.execute(command)
+
+
+class AdsFeed:
+
+    def __init__(self):
+
+        all_ads = database.load_advertisements()
+
+        self.ads_for_feed = []
+
+        for ad in all_ads:
+            if ad.approved == 1 and ad.active == 1:
+                print(f'ap_ac: {ad.approved}_{ad.active}')
+                self.ads_for_feed.append(ad)
+
+    def get_feed_data_for(self, page_number):
+
+        if page_number == 0:
+            page_number = 1
+
+        if len(self.ads_for_feed) == 0:
+            print(f'ads_for_feed: {len(self.ads_for_feed)}')
+            return {
+                'previous_page': page_number + 1,
+                'current_page': page_number - 1,
+                'next_page': page_number,
+                'pages': [[1, 'active']],
+            }
+
+        total_pages = math.ceil(len(self.ads_for_feed)/12)
+        number_of_ads_at_last_page = len(self.ads_for_feed) % 12
+
+        if page_number > total_pages:
+            page_number = total_pages
+
+        ads_to_show_start_idx = (page_number - 1) * 12
+
+        ads_to_show_end_idx = -1
+        if page_number == total_pages:
+            ads_to_show_end_idx += number_of_ads_at_last_page
+        else:
+            ads_to_show_end_idx += 12
+
+        ads = [[], [], []]
+
+        # [ads_id, hostel_name, rating, thana, ins_pref, rent]
+
+        for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx + 1]:
+
+            hostel = Hostel()
+            hostel.load(self.ads_for_feed[i].hostel_id)
+
+            ads[math.floor((i-ads_to_show_start_idx)/4)].append([
+                self.ads_for_feed[i].ads_id,
+                hostel.hostel_name,
+                hostel.rating,
+                hostel.thana,
+                self.ads_for_feed[i].preferred_institutions.institutions[0],
+                self.ads_for_feed[i].rent,
+            ])
+
+        pages = [[p, ''] for p in range(total_pages + 1)]
+        pages[page_number][1] = 'active'
+
+        return {
+            'previous_page': page_number + 1,
+            'current_page': page_number - 1,
+            'next_page': page_number,
+            'pages': pages[1:],
+            'ads': ads,
+        }
 
 
 class Complaint:
@@ -403,23 +632,23 @@ class HostelRating:
     def __init__(self):
         pass
 
-    def load(self, s_id, h_id):
-        command = f"SELECT * FROM rating_hostel WHERE (student_id,hostel_id) = ('{s_id}','{h_id}')"
+    def load(self, s_u_id, h_id):
+        command = f"SELECT * FROM rating_hostel WHERE (student_user_id,hostel_id) = ('{s_u_id}','{h_id}')"
         cursor.execute(command)
 
-        self.student_id = s_id
+        self.student_user_id = s_u_id
         self.hostel_id = h_id
         self.rating = cursor.fetchall()[0][2]
 
     def create(self, data):
-        self.student_id = data['student_id']
+        self.student_user_id = data['student_id']
         self.hostel_id = data['hostel_id']
         self.rating = data['rating']
 
     def save(self):
-        command = f"DELETE FROM rating_hostel WHERE (student_id,hostel_id) = ('{self.student_id}','{self.hostel_id}')"
+        command = f"DELETE FROM rating_hostel WHERE (student_user_id, hostel_id) = ('{self.student_user_id}','{self.hostel_id}')"
         cursor.execute(command)
-        command = f"INSERT INTO rating_hostel VALUES ('{self.student_id}','{self.hostel_id}',{self.rating})"
+        command = f"INSERT INTO rating_hostel VALUES ('{self.student_user_id}','{self.hostel_id}',{self.rating})"
         cursor.execute(command)
 
 

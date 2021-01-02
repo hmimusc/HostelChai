@@ -28,7 +28,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">Select a Hostel: </span>
                     </div>
-                    <select class="custom-select" name="'hostel" required>
+                    <select class="custom-select" name="hostel" required>
                         {% for hostel in hostels %}
                             <option class="custom-select-option" value="{{ hostel }}">{{ hostel }}</option>
                         {% endfor %}
@@ -78,6 +78,19 @@
                         <label class="text-secondary" for="facility_description">Facility description:</label>
                         <textarea class="form-control" rows="2" id="facility_description" name="facility_description" placeholder="Write description of the facilities ..."></textarea>
                     </div>
+                </div>
+
+                <br>
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Preferred Institution:</span>
+                    </div>
+                    <select class="custom-select" name="preferred_institution">
+                        {% for ins_name in ins_names %}
+                            <option value="{{ ins_name }}">{{ ins_name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
 
                 <br>

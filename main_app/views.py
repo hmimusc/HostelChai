@@ -1,4 +1,4 @@
-from my_modules import page_works, exceptions, classes, database
+from my_modules import page_works, exceptions, classes, database, utilities
 from django.shortcuts import render
 from django.db import connection
 from pathlib import Path
@@ -162,12 +162,61 @@ def requests_loader(request):
 
     req_type = request.POST.get('req_type')
 
-    # print(f'[+] req_type: {req_type}')
-
     if req_type == 'hostels':
         return hostel_loader_page(request)
+    elif req_type == 'ads':
+        return ad_approval_page(request)
     else:
         return home_page(request)
+
+
+def ad_approval_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+
+        'ads_id': request.POST.get('ads_id'),
+    }
+
+    return render(request, 'main_app/ad_approval_page.html', context=data_dict)
+
+
+def approve_ad(request, ads_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    ad = classes.Advertise()
+    ad.load(ads_id)
+    ad.approved = 1
+    ad.active = 1
+    ad.save()
+
+    return requests_loader_page(request)
 
 
 def hostel_loader_page(request):
@@ -599,6 +648,30 @@ def student_profile_page(request, user_id):
     except exceptions.UserRequirementException:
         return home_page(request)
 
+    student = classes.Student()
+    student.load_student(user_id)
+    hostel = classes.Hostel()
+    hostel_dict = {}
+
+    try:
+        hostel.load(student.current_hostel_id)
+
+        hostel_owner = classes.HostelOwner()
+        hostel_owner.load_hostel_owner(hostel.hostel_owner_id)
+
+        hostel_dict = {
+            'hostel_found': 'true',
+            'hostel_photo': hostel.photo,
+            'hostel_id': hostel.hostel_id,
+            'hostel_name': hostel.hostel_name,
+            'hostel_rating': hostel.rating,
+            'hostel_location': hostel.thana,
+            'hostel_contact': hostel_owner.phone_number,
+        }
+
+    except exceptions.HostelNotFoundException:
+        hostel_dict = {'hostel_fount': 'false'}
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
@@ -608,14 +681,9 @@ def student_profile_page(request, user_id):
         'user_type': user_dict['user_type'],
         'page_name': 'student_profile_page',
         'login_status': 'true',
-
-        'hostel_photo': 'HOS-4_photo_1.png',
-        'hostel_id': 'HOS-1',
-        'hostel_name': 'Test Hostel',
-        'hostel_rating': '8.2',
-        'hostel_location': 'Mirpur',
-        'hostel_contact': '+8801521579865',
     }
+
+    data_dict = utilities.add_dictionary(data_dict, hostel_dict)
 
     return render(request, 'main_app/student_profile_page.html', context=data_dict)
 
@@ -729,12 +797,9 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    #print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
-
-    # code TarekHasan
     rating = request.POST.get('rate')
     review = request.POST.get('review')
-    # print(f'{rating} {review}')
+
     data = {
         'student_id': user_id,
         'hostel_id': hostel_id,
@@ -748,7 +813,6 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
     new_hostel_review = classes.HostelReview()
     new_hostel_review.create(data)
     new_hostel_review.save()
-    # code end
 
     return student_profile_page(request, user_id)
 
@@ -774,6 +838,9 @@ def ad_posting_page(request):
         if hostel.hostel_owner_id == user_dict['user_id'] and hostel.verified == 1:
             hostel_id_name.append(f'{hostel.hostel_id} {hostel.hostel_name}')
 
+    ins_file = open(f'{text_files_dir}/institution_names.txt', 'r')
+    ins_names = ins_file.readlines()
+
     data_dict = {
         'user_id': user_dict['user_id'],
         'name': user_dict['name'],
@@ -782,6 +849,7 @@ def ad_posting_page(request):
         'page_name': 'ad_posting_page',
         'login_status': 'true',
         'hostels': hostel_id_name,
+        'ins_names': ins_names,
     }
 
     return render(request, 'main_app/ad_posting_page.html', context=data_dict)
@@ -798,14 +866,43 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # code Monirul Islam
+    hostel = request.POST.get('hostel').split()[0]
+    total_seats = request.POST.get('total_seats')
+    per_room_seats = request.POST.get('per_room_seats')
+    rent = request.POST.get('rent')
+    room_description = request.POST.get('room_description')
+    meal_description = request.POST.get('meal_description')
+    facility_description = request.POST.get('facility_description')
+    preferred_institutions = [request.POST.get('preferred_institution')]
+    rules = request.POST.get('rules')
+    conditions = request.POST.get('conditions')
 
-    # code end
+    new_advertise = classes.Advertise()
+    new_advertise.create({
+            'hostel_id': hostel,
+            'room_description': room_description,
+            'meal_description': meal_description,
+            'facilities_description': facility_description,
+            'preferred_institutions': preferred_institutions,
+            'rent': rent,
+            'rules': rules,
+            'conditions': conditions,
+            'per_room_seats': per_room_seats,
+            'total_seats': total_seats,
+        }, {
+            'room_photo': request.FILES['room_photo_1'],
+            'room_photo_2': request.FILES['room_photo_2'],
+            'room_photo_3': request.FILES['room_photo_3'],
+        }
+
+    )
+
+    new_advertise.save()
 
     return home_page(request)
 
 
-def ads_feed_page(request, page_number=1):
+def ads_feed_page(request, page_number):
 
     login_status = 'true'
 
@@ -832,57 +929,7 @@ def ads_feed_page(request, page_number=1):
             'login_status': 'false',
         }
 
-    # code Sakib Mahmud
-
-    # max 12 ads per page. you've to calculate total number of page
-    total_page = 10
-
-    # construct a list like this
-    # number of max ads per row = 4. If total ads = 40 then total row = 40/4 = 10
-    # number of max row = 3
-    # for each acquire following data from database
-    # idx=0: ADS_id, idx=1: hostel_name, idx=2: hostel_rating, idx=3: thana, idx=4: institution preference, idx=5: rent
-
-    # acquire the ads according to the page_number
-
-    ads = [ # demo list
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ],
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ],
-        [
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-            ['ADS-1', 'Test Hostel', 'N/A', 'Adabor', 'N/A', '4500'],
-        ]
-    ]
-
-    # code end
-
-    data_dict['ads'] = ads
-
-    if page_number == 0:
-        page_number = 1
-    elif page_number > total_page:
-        page_number = total_page
-
-    pages = [[p, ''] for p in range(total_page + 1)]
-
-    pages[page_number][1] = 'active'
-
-    data_dict['previous_page'] = page_number - 1
-    data_dict['next_page'] = page_number + 1
-    data_dict['pages'] = pages[1:]
-    data_dict['current_page'] = page_number
+    data_dict = utilities.add_dictionary(data_dict, classes.AdsFeed().get_feed_data_for(page_number))
 
     return render(request, 'main_app/ads_feed_page.html', context=data_dict)
 
