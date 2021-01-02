@@ -30,7 +30,7 @@
                     <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:requests_loader_page' %}">Check Another</a>
                 </div>
                 <div class="col">
-                    <a class="btn btn-outline-success btn-block" href="#">Approve</a>
+                    <a class="btn btn-outline-success btn-block" href="{% url 'main_app:approve_ad' ads_id=ads_id %}">Approve</a>
                 </div>
             </div>
         </div>

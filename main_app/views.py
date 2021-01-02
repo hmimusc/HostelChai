@@ -199,6 +199,27 @@ def ad_approval_page(request):
     return render(request, 'main_app/ad_approval_page.html', context=data_dict)
 
 
+def approve_ad(request, ads_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    ad = classes.Advertise()
+    ad.load(ads_id)
+    ad.approved = 1
+    ad.active = 1
+    ad.save()
+
+    return requests_loader_page(request)
+
+
 def hostel_loader_page(request):
 
     try:
