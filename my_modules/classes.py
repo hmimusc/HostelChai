@@ -81,15 +81,16 @@ class User:
 
     def save(self):
 
-        self.files['profile_picture'].save(f'{settings.MEDIA_ROOT}/{self.profile_picture}')
-        self.files['nid'].save(f'{settings.MEDIA_ROOT}/{self.nid}')
-        self.files['birth_certificate'].save(f'{settings.MEDIA_ROOT}/{self.birth_certificate}')
-
         command = f'select count(*) from user where id like "{self.id}"'
         cursor.execute(command)
         user_count = cursor.fetchall()[0][0]
 
         if user_count == 0:
+
+            self.files['profile_picture'].save(f'{settings.MEDIA_ROOT}/{self.profile_picture}')
+            self.files['nid'].save(f'{settings.MEDIA_ROOT}/{self.nid}')
+            self.files['birth_certificate'].save(f'{settings.MEDIA_ROOT}/{self.birth_certificate}')
+
             command = (
                     f'insert into user values (' +
                     f'"{self.id}", ' +
@@ -110,9 +111,10 @@ class User:
             )
             cursor.execute(command)
         else:
+
             command = (
                     f'update user set ' +
-                    f'id="{self.id}", ' +
+                    # f'id="{self.id}", ' +
                     f'name="{self.name}", ' +
                     f'username="{self.username}", ' +
                     f'password="{self.password}", ' +
@@ -125,8 +127,10 @@ class User:
                     f'email="{self.email}", ' +
                     f'permanent_address="{self.permanent_address}", ' +
                     f'verified={self.verified}, ' +
-                    f'user_type={self.user_type}'
+                    f'user_type={self.user_type} ' +
+                    f'where id like "{self.id}"'
             )
+
             cursor.execute(command)
 
 
@@ -183,11 +187,12 @@ class HostelOwner(User):
             cursor.execute(command)
         else:
             command = (
-                    f'update hostel_owner set ' +
-                    f'user_id={self.user_id} ' +
-                    f'occupation={self.occupation} ' +
-                    f'due={self.due} ' +
-                    f'verified={self.verified}'
+                f'update hostel_owner set ' +
+                f'user_id={self.user_id}, ' +
+                f'occupation={self.occupation}, ' +
+                f'due={self.due}, ' +
+                f'verified={self.verified} ' +
+                f'where user_id like "{self.user_id}"'
             )
             cursor.execute(command)
 
@@ -223,10 +228,10 @@ class Student(User):
             'phone_number': data['phone_number'],
             'permanent_address': data['permanent_address'],
         }, {
-                        'profile_picture': files['profile_picture'],
-                        'nid': files['nid'],
-                        'birth_certificate': files['birth_certificate'],
-                    })
+            'profile_picture': files['profile_picture'],
+            'nid': files['nid'],
+            'birth_certificate': files['birth_certificate'],
+        })
 
         self.user_id = self.id
         self.institution = data['institution']
@@ -255,11 +260,12 @@ class Student(User):
         else:
             command = (
                     f'update student set ' +
-                    f'user_id="{self.user_id}"' +
-                    f'institution="{self.institution}" ' +
-                    f'degree="{self.degree}" ' +
-                    f'student_id="{self.student_id}" ' +
-                    f'current_hostel_id="{self.current_hostel_id}"'
+                    f'user_id="{self.user_id}", ' +
+                    f'institution="{self.institution}", ' +
+                    f'degree="{self.degree}", ' +
+                    f'student_id="{self.student_id}", ' +
+                    f'current_hostel_id="{self.current_hostel_id}" ' +
+                    f'where user_id like "{self.user_id}"'
             )
             cursor.execute(command)
 
