@@ -163,12 +163,40 @@ def requests_loader(request):
 
     req_type = request.POST.get('req_type')
 
-    # print(f'[+] req_type: {req_type}')
-
     if req_type == 'hostels':
         return hostel_loader_page(request)
+    elif req_type == 'ads':
+        return ad_approval_page(request)
     else:
         return home_page(request)
+
+
+def ad_approval_page(request):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'admin_home_page',
+        'login_status': 'true',
+
+        'ads_id': request.POST.get('ads_id'),
+    }
+
+    return render(request, 'main_app/ad_approval_page.html', context=data_dict)
 
 
 def hostel_loader_page(request):
@@ -600,6 +628,30 @@ def student_profile_page(request, user_id):
     except exceptions.UserRequirementException:
         return home_page(request)
 
+    student = classes.Student()
+    student.load_student(user_id)
+    hostel = classes.Hostel()
+    hostel_dict = {}
+
+    try:
+        hostel.load(student.current_hostel_id)
+
+        hostel_owner = classes.HostelOwner()
+        hostel_owner.load_hostel_owner(hostel.hostel_owner_id)
+
+        hostel_dict = {
+            'hostel_found': 'true',
+            'hostel_photo': hostel.photo,
+            'hostel_id': hostel.hostel_id,
+            'hostel_name': hostel.hostel_name,
+            'hostel_rating': hostel.rating,
+            'hostel_location': hostel.thana,
+            'hostel_contact': hostel_owner.phone_number,
+        }
+
+    except exceptions.HostelNotFoundException:
+        hostel_dict = {'hostel_fount': 'false'}
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
@@ -609,14 +661,9 @@ def student_profile_page(request, user_id):
         'user_type': user_dict['user_type'],
         'page_name': 'student_profile_page',
         'login_status': 'true',
-
-        'hostel_photo': 'HOS-4_photo_1.png',
-        'hostel_id': 'HOS-1',
-        'hostel_name': 'Test Hostel',
-        'hostel_rating': '8.2',
-        'hostel_location': 'Mirpur',
-        'hostel_contact': '+8801521579865',
     }
+
+    data_dict = utilities.add_dictionary(data_dict, hostel_dict)
 
     return render(request, 'main_app/student_profile_page.html', context=data_dict)
 
@@ -730,12 +777,9 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    #print(f'User ID: {user_id}\nHostel ID: {hostel_id}')
-
-    # code TarekHasan
     rating = request.POST.get('rate')
     review = request.POST.get('review')
-    # print(f'{rating} {review}')
+
     data = {
         'student_id': user_id,
         'hostel_id': hostel_id,
@@ -749,7 +793,6 @@ def process_hostel_review_and_rating(request, user_id, hostel_id):
     new_hostel_review = classes.HostelReview()
     new_hostel_review.create(data)
     new_hostel_review.save()
-    # code end
 
     return student_profile_page(request, user_id)
 
@@ -803,10 +846,7 @@ def ad_posting(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    # coding part(monir) starts
-
     hostel = request.POST.get('hostel').split()[0]
-    #print(hostel)
     total_seats = request.POST.get('total_seats')
     per_room_seats = request.POST.get('per_room_seats')
     rent = request.POST.get('rent')
@@ -839,118 +879,7 @@ def ad_posting(request):
 
     new_advertise.save()
 
-    # coding part(monir) ends
-
     return home_page(request)
-
-
-def ads_feed_page_old(request, page_number):
-
-    login_status = 'true'
-
-    try:
-        page_works.request_verify(request, True)
-    except exceptions.LoginRequiredException:
-        login_status = 'false'
-
-    data_dict = {}
-
-    if login_status == 'true':
-        user_dict = page_works.get_active_user(request)
-        data_dict = {
-            'user_id': user_dict['user_id'],
-            'name': user_dict['name'],
-            'logged_in_username': user_dict['username'],
-            'user_type': user_dict['user_type'],
-            'page_name': 'ad_feed_page',
-            'login_status': 'true',
-        }
-    else:
-        data_dict = {
-            'page_name': 'ads_feed_page',
-            'login_status': 'false',
-        }
-
-    c = f'select COUNT(ads_id) from advertise where approved=1'
-    cursor.execute(c)
-    c1 = cursor.fetchall()
-    rows_full = int(c1[0][0]/4)
-    row_last_add = c1[0][0] % 4
-    total_page = math.ceil(c1[0][0]/12)
-    co = 'select ads_id from advertise where approved=1'
-    cursor.execute(co)
-    cc = cursor.fetchall()
-    lst = [[] for _ in range(rows_full+1)]
-
-    counter = 0
-
-    for i in range(rows_full):
-        for j in range(4):
-            command = f'select ads_id,hostel_id,rent from advertise where ads_id like "{cc[counter][0]}"'
-            cursor.execute(command)
-            rem=cursor.fetchall()
-            # print(rem)
-            command1 = f'select hostel_name,thana from hostel where hostel_id like "{rem[0][1]}"'
-            cursor.execute(command1)
-            rem1 = cursor.fetchall()
-            command2 = f'select institution_name from preferred_institutions where ads_id like "{rem[0][0]}"'
-            cursor.execute(command2)
-            rem2 = cursor.fetchall()
-            lists = [rem[0][0], rem1[0][0], 'N/A', rem1[0][1], rem2[0][0], rem[0][2]]
-            lst[i].append(lists)
-            counter = counter+1
-
-    for i in range(row_last_add):
-        command = f'select ads_id,hostel_id,rent from advertise where ads_id like "{cc[counter][0]}"'
-        cursor.execute(command)
-        rem = cursor.fetchall()
-        # print(rem)
-        command1 = f'select hostel_name,thana from hostel where hostel_id like "{rem[0][1]}"'
-        cursor.execute(command1)
-        rem1 = cursor.fetchall()
-        command2 = f'select institution_name from preferred_institutions where ads_id like "{rem[0][0]}"'
-        cursor.execute(command2)
-        rem2 = cursor.fetchall()
-        lists = [rem[0][0], rem1[0][0], 'N/A', rem1[0][1], 'rem2[0][0]', rem[0][2]]
-        lst[rows_full].append(lists)
-        counter = counter+1
-
-    p1 = page_number-1
-    p2 = page_number*3
-
-    if page_number == total_page:
-        data_dict['ads'] = lst[p1*3:len(lst)]
-    else:
-        data_dict['ads'] = lst[p1*3:p2]
-    if page_number > total_page:
-        page_number = total_page
-
-    pages = [[p, ''] for p in range(total_page + 1)]
-
-    pages[page_number][1] = 'active'
-
-    if page_number == 1 and page_number == total_page:
-        data_dict['previous_page'] = page_number
-        data_dict['next_page'] = page_number
-        data_dict['pages'] = pages[1:]
-        data_dict['current_page'] = page_number
-    elif page_number == 1:
-        data_dict['previous_page'] = page_number
-        data_dict['next_page'] = page_number + 1
-        data_dict['pages'] = pages[1:]
-        data_dict['current_page'] = page_number
-    elif page_number == total_page:
-        data_dict['previous_page'] = page_number-1
-        data_dict['next_page'] = page_number
-        data_dict['pages'] = pages[1:]
-        data_dict['current_page'] = page_number-1
-    else:
-        data_dict['previous_page'] = page_number-1
-        data_dict['next_page'] = page_number + 1
-        data_dict['pages'] = pages[1:]
-        data_dict['current_page'] = page_number
-
-    return render(request, 'main_app/ads_feed_page.html', context=data_dict)
 
 
 def ads_feed_page(request, page_number):

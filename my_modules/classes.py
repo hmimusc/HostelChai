@@ -10,7 +10,7 @@ from django.conf import settings
 import math
 from PIL import Image
 
-from . import database
+from . import database, exceptions
 
 cursor = connection.cursor()
 
@@ -21,7 +21,25 @@ class User:
         pass
 
     def load(self, user_id):
-        pass
+        command = f'select * from user where id like "{user_id}"'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.id = data[0]
+        self.name = data[1]
+        self.username = data[2]
+        self.password = data[3]
+        self.profile_picture = data[4]
+        self.dob = data[5]
+        self.nid = data[6]
+        self.birth_certificate = data[7]
+        self.gender = data[8]
+        self.phone_number = data[9]
+        self.email = data[10]
+        self.permanent_address = data[11]
+        self.verified = data[12]
+        self.user_type = data[13]
 
     def create(self, user_type, data, files):
 
@@ -116,10 +134,19 @@ class HostelOwner(User):
 
     def __init__(self):
         User.__init__(self)
-        pass
 
     def load_hostel_owner(self, user_id):
-        pass
+        User.load(self, user_id)
+
+        command = f'select * from hostel_owner where user_id like "{user_id}"'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.user_id = self.id
+        self.occupation = data[1]
+        self.due = data[2]
+        self.active = data[3]
 
     def create_hostel_owner(self, data, files):
 
@@ -169,10 +196,20 @@ class Student(User):
 
     def __init__(self):
         User.__init__(self)
-        pass
 
     def load_student(self, user_id):
-        pass
+        User.load(self, user_id)
+
+        command = f'select * from student'
+        cursor.execute(command)
+
+        data = cursor.fetchall()[0]
+
+        self.user_id = self.id
+        self.institution = data[1]
+        self.degree = data[2]
+        self.student_id = data[3]
+        self.current_hostel_id = data[4]
 
     def create_student(self, data, files):
 
@@ -236,7 +273,10 @@ class Hostel:
         command = f'select * from hostel where hostel_id like "{hostel_id}"'
         cursor.execute(command)
 
-        hostel = cursor.fetchall()[0]
+        try:
+            hostel = cursor.fetchall()[0]
+        except IndexError:
+            raise exceptions.HostelNotFoundException
 
         self.hostel_id = hostel_id
         self.hostel_owner_id = hostel[1]
@@ -250,6 +290,17 @@ class Hostel:
         self.photo = hostel[9]
         self.verified = hostel[10]
         self.active = hostel[11]
+
+        self.rating = -1
+
+        hostel_ratings = database.load_hostel_ratings()
+        if len(hostel_ratings) != 0:
+            self.rating = 0
+            for rating in hostel_ratings:
+                self.rating += rating.rating
+            self.rating = round(self.rating/len(hostel_ratings), 1)
+
+        self.reviews = []
 
     def create(self, data, files):
 
@@ -268,6 +319,9 @@ class Hostel:
         self.photo = f'{self.hostel_owner_id}_{self.hostel_id}_photo.png'
         self.verified = 0
         self.active = 0
+
+        self.rating = -1
+        self.reviews = []
 
         self.files = {
             'electricity_bill': Image.open(files['electricity_bill']),
@@ -462,7 +516,7 @@ class AdsFeed:
             ads[math.floor((i-ads_to_show_start_idx)/4)].append([
                 self.ads_for_feed[i].ads_id,
                 hostel.hostel_name,
-                'N/A',
+                hostel.rating,
                 hostel.thana,
                 self.ads_for_feed[i].preferred_institutions.institutions[0],
                 self.ads_for_feed[i].rent,
@@ -578,23 +632,23 @@ class HostelRating:
     def __init__(self):
         pass
 
-    def load(self, s_id, h_id):
-        command = f"SELECT * FROM rating_hostel WHERE (student_id,hostel_id) = ('{s_id}','{h_id}')"
+    def load(self, s_u_id, h_id):
+        command = f"SELECT * FROM rating_hostel WHERE (student_user_id,hostel_id) = ('{s_u_id}','{h_id}')"
         cursor.execute(command)
 
-        self.student_id = s_id
+        self.student_user_id = s_u_id
         self.hostel_id = h_id
         self.rating = cursor.fetchall()[0][2]
 
     def create(self, data):
-        self.student_id = data['student_id']
+        self.student_user_id = data['student_id']
         self.hostel_id = data['hostel_id']
         self.rating = data['rating']
 
     def save(self):
-        command = f"DELETE FROM rating_hostel WHERE (student_id,hostel_id) = ('{self.student_id}','{self.hostel_id}')"
+        command = f"DELETE FROM rating_hostel WHERE (student_user_id, hostel_id) = ('{self.student_user_id}','{self.hostel_id}')"
         cursor.execute(command)
-        command = f"INSERT INTO rating_hostel VALUES ('{self.student_id}','{self.hostel_id}',{self.rating})"
+        command = f"INSERT INTO rating_hostel VALUES ('{self.student_user_id}','{self.hostel_id}',{self.rating})"
         cursor.execute(command)
 
 

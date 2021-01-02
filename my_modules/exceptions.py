@@ -8,3 +8,7 @@ class LogoutRequiredException(Exception):
 
 class UserRequirementException(Exception):
     pass
+
+
+class HostelNotFoundException(Exception):
+    pass
