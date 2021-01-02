@@ -285,7 +285,7 @@ def approve_hostel(request):
     command = f'update hostel set verified=1, active=1 where hostel_id like "{hostel_id}"'
     cursor.execute(command)
 
-    return hostel_owner_home_page(request)
+    return requests_loader_page(request)
 
 
 def registration_page(request):

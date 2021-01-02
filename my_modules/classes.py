@@ -294,11 +294,19 @@ class Hostel:
         self.rating = -1
 
         hostel_ratings = database.load_hostel_ratings()
-        if len(hostel_ratings) != 0:
-            self.rating = 0
-            for rating in hostel_ratings:
+
+        avg_by = 0
+        self.rating = 0
+
+        for rating in hostel_ratings:
+            if rating.hostel_id == self.hostel_id:
+                avg_by += 1
                 self.rating += rating.rating
-            self.rating = round(self.rating/len(hostel_ratings), 1)
+
+        if avg_by == 0:
+            self.rating = -1
+        else:
+            self.rating = round(self.rating/avg_by, 1)
 
         self.reviews = []
 
