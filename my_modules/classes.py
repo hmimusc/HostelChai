@@ -205,7 +205,7 @@ class Student(User):
     def load_student(self, user_id):
         User.load(self, user_id)
 
-        command = f'select * from student'
+        command = f'select * from student where user_id like "{user_id}"'
         cursor.execute(command)
 
         data = cursor.fetchall()[0]

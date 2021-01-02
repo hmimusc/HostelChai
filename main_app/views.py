@@ -723,13 +723,13 @@ def student_profile_page(request, user_id):
             'hostel_photo': hostel.photo,
             'hostel_id': hostel.hostel_id,
             'hostel_name': hostel.hostel_name,
-            'hostel_rating': hostel.rating,
+            'hostel_rating': hostel.rating if hostel.rating != -1 else 'UNRATED',
             'hostel_location': hostel.thana,
             'hostel_contact': hostel_owner.phone_number,
         }
 
     except exceptions.HostelNotFoundException:
-        hostel_dict = {'hostel_fount': 'false'}
+        hostel_dict = {'hostel_found': 'false'}
 
     user_dict = page_works.get_active_user(request)
 
