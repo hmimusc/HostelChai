@@ -49,7 +49,7 @@
                                     {% endif %}
                                     <div class="dropdown-divider bg-secondary"></div>
                                     {% if user_type == 'A' %}
-                                        <a class="dropdown-item" href="#">Check complaints</a>
+                                        <a class="dropdown-item" href="{% url 'main_app:complaint_checker_page' %}">Check complaints</a>
                                     {% else %}
                                         <a class="dropdown-item" href="{% url 'main_app:complaint_box_page' %}">Complaint box</a>
                                     {% endif %}

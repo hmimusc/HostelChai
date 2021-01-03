@@ -40,6 +40,7 @@ def load_hostel_ratings():
 
     return ratings
 
+
 def load_advertisements():
     command = f'select ads_id from advertise'
     cursor.execute(command)
@@ -53,3 +54,18 @@ def load_advertisements():
         ads[-1].load(ads_id)
 
     return ads
+
+
+def load_complaints():
+    command = f'select complaint_id from complaint_box'
+    cursor.execute(command)
+
+    complaint_ids = [id[0] for id in list(cursor.fetchall())]
+
+    complaints = []
+
+    for complaint_id in complaint_ids:
+        complaints.append(classes.Complaint())
+        complaints[-1].load(complaint_id)
+
+    return complaints

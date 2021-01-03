@@ -1045,3 +1045,88 @@ def complaint_box(request):
     new_complaint.save()
 
     return home_page(request)
+
+
+def complaint_checker_page(request, complaint_id='null'):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    user_dict = page_works.get_active_user(request)
+
+    data_dict = {
+        'user_id': user_dict['user_id'],
+        'name': user_dict['name'],
+        'logged_in_username': user_dict['username'],
+        'user_type': user_dict['user_type'],
+        'page_name': 'complaint_checker_page',
+        'login_status': 'true',
+        'all_resolved': 'false',
+    }
+
+    current_complaint = {
+        'loaded_complaint_id': complaint_id,
+    }
+
+    complaints = database.load_complaints()
+
+    complaint_id_sub = []
+
+    unresolved = 0
+
+    for complaint in complaints:
+        if complaint.resolved == 0:
+            unresolved += 1
+
+            complaint_id_sub.append([complaint.complaint_id, complaint.subject])
+
+            if complaint_id != 'null' and complaint.complaint_id == complaint_id:
+
+                user = classes.User()
+                user.load(complaint.user_id)
+
+                utilities.add_dictionary(current_complaint, {
+                    'loaded_complaint_subject': complaint.subject,
+                    'loaded_complaint_description': complaint.complaint,
+                    'loaded_complaint_attachment': complaint.photo,
+                    'loaded_user_id_name': f'{user.id} {user.name}',
+                    'loaded_user_contact': [user.phone_number, user.email],
+                })
+
+    if unresolved == 0:
+        data_dict['all_resolved'] = 'true'
+        return render(request, 'main_app/complaint_checker_page.html', context=data_dict)
+
+    data_dict['complaints'] = complaint_id_sub
+
+    data_dict = utilities.add_dictionary(data_dict, current_complaint)
+
+    return render(request, 'main_app/complaint_checker_page.html', context=data_dict)
+
+
+def resolve_complaint(request, complaint_id):
+
+    try:
+        page_works.request_verify(request, True)
+    except exceptions.LoginRequiredException:
+        return login_page(request)
+
+    try:
+        page_works.user_verify(request, 'A')
+    except exceptions.UserRequirementException:
+        return home_page(request)
+
+    if complaint_id != 'null':
+        complaint = classes.Complaint()
+        complaint.load(complaint_id)
+        complaint.resolved = 1
+        complaint.save()
+
+    return complaint_checker_page(request)

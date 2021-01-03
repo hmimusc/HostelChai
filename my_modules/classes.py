@@ -551,7 +551,7 @@ class Complaint:
         pass
 
     def load(self, complaint_id):
-        command = f'SELECT * FROM complaint_box where complaint_id = {complaint_id}'
+        command = f'SELECT * FROM complaint_box where complaint_id like "{complaint_id}"'
         cursor.execute(command)
 
         complaint = cursor.fetchall()[0]
@@ -567,11 +567,11 @@ class Complaint:
         command = 'SELECT COUNT(*) FROM complaint_box'
         cursor.execute(command)
 
-        self.complaint_id = cursor.fetchall()[0][0] + 1
+        self.complaint_id = f'COM-{cursor.fetchall()[0][0] + 1}'
         self.user_id = data['user_id']
         self.subject = data['subject']
         self.complaint = data['complaint']
-        self.photo = f'{self.user_id}_complaint-{self.complaint_id}_evidence.png'
+        self.photo = f'{self.user_id}_{self.complaint_id}_evidence.png'
         self.resolved = 0
 
         self.files = {
@@ -579,7 +579,7 @@ class Complaint:
         }
 
     def save(self):
-        command = f'SELECT COUNT(*) FROM complaint_box WHERE complaint_id = {self.complaint_id}'
+        command = f'SELECT COUNT(*) FROM complaint_box WHERE complaint_id like "{self.complaint_id}"'
         cursor.execute(command)
         complaint_count = cursor.fetchall()[0][0]
 
@@ -587,7 +587,7 @@ class Complaint:
             self.files['photo'].save(f'{settings.MEDIA_ROOT}/{self.photo}')
             command = f'INSERT INTO complaint_box VALUES ({self.complaint_id},"{self.user_id}","{self.subject}","{self.complaint}","{self.photo}",{self.resolved})'
         else:
-            command = f'UPDATE complaint_box SET user_id = "{self.user_id}", subject = "{self.subject}", complaint = "{self.complaint}", photo = "{self.photo}", resolved = {self.resolved} WHERE complaint_id = {self.complaint_id}'
+            command = f'UPDATE complaint_box SET user_id = "{self.user_id}", subject = "{self.subject}", complaint = "{self.complaint}", photo = "{self.photo}", resolved = {self.resolved} WHERE complaint_id like "{self.complaint_id}"'
         cursor.execute(command)
 
 
