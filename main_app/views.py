@@ -143,8 +143,6 @@ def requests_loader_page(request):
     data_dict['hostels'] = hostels
     data_dict['ads'] = ads
 
-    data_dict['checked'] = ['', '', 'checked']
-
     return render(request, 'main_app/requests_loader_page.html', context=data_dict)
 
 
@@ -184,6 +182,11 @@ def ad_approval_page(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
+    ads_id = request.POST.get('ads_id')
+
+    if not ads_id:
+        return requests_loader_page(request)
+
     user_dict = page_works.get_active_user(request)
 
     data_dict = {
@@ -193,8 +196,7 @@ def ad_approval_page(request):
         'user_type': user_dict['user_type'],
         'page_name': 'admin_home_page',
         'login_status': 'true',
-
-        'ads_id': request.POST.get('ads_id'),
+        'ads_id': ads_id,
     }
 
     return render(request, 'main_app/ad_approval_page.html', context=data_dict)
@@ -233,42 +235,43 @@ def hostel_approval_page(request):
     except exceptions.UserRequirementException:
         return home_page(request)
 
-    if 'hostel_id' in request.POST:
-        hostel_id = request.POST.get('hostel_id')
+    hostel_id = request.POST.get('hostel_id')
+
+    if hostel_id:
+
+        hostel = classes.Hostel()
+        hostel.load(hostel_id)
+
+        command = f'select name, phone_number from user where id like "{hostel.hostel_owner_id}"'
+        cursor.execute(command)
+
+        hostel_owner_name, phone_number = cursor.fetchall()[0]
+
+        user_dict = page_works.get_active_user(request)
+
+        data_dict = {
+            'user_id': user_dict['user_id'],
+            'name': user_dict['name'],
+            'logged_in_username': user_dict['username'],
+            'user_type': user_dict['user_type'],
+            'page_name': 'admin_home_page',
+            'login_status': 'true',
+            'hostel_name': hostel.hostel_name,
+            'hostel_owner_name': hostel_owner_name,
+            'phone_number': phone_number,
+            'hostel_id': hostel.hostel_id,
+            'hostel_house_number': hostel.house_number,
+            'hostel_road_number': hostel.road_number,
+            'hostel_thana': hostel.thana,
+            'hostel_postal_code': hostel.postal_code,
+            'hostel_photo': hostel.photo,
+            'hostel_electricity_bill': hostel.electricity_bill,
+            'hostel_document': hostel.hostel_document,
+        }
+
+        return render(request, 'main_app/hostel_approval_page.html', context=data_dict)
     else:
         return requests_loader_page(request)
-
-    hostel = classes.Hostel()
-    hostel.load(hostel_id)
-
-    command = f'select name, phone_number from user where id like "{hostel.hostel_owner_id}"'
-    cursor.execute(command)
-
-    hostel_owner_name, phone_number = cursor.fetchall()[0]
-
-    user_dict = page_works.get_active_user(request)
-
-    data_dict = {
-        'user_id': user_dict['user_id'],
-        'name': user_dict['name'],
-        'logged_in_username': user_dict['username'],
-        'user_type': user_dict['user_type'],
-        'page_name': 'admin_home_page',
-        'login_status': 'true',
-        'hostel_name': hostel.hostel_name,
-        'hostel_owner_name': hostel_owner_name,
-        'phone_number': phone_number,
-        'hostel_id': hostel.hostel_id,
-        'hostel_house_number': hostel.house_number,
-        'hostel_road_number': hostel.road_number,
-        'hostel_thana': hostel.thana,
-        'hostel_postal_code': hostel.postal_code,
-        'hostel_photo': hostel.photo,
-        'hostel_electricity_bill': hostel.electricity_bill,
-        'hostel_document': hostel.hostel_document,
-    }
-
-    return render(request, 'main_app/hostel_approval_page.html', context=data_dict)
 
 
 def approve_hostel(request):
@@ -304,19 +307,26 @@ def user_approval_page(request):
 
     user_dict = page_works.get_active_user(request)
 
-    data_dict = {
-        'user_id': user_dict['user_id'],
-        'name': user_dict['name'],
-        'logged_in_username': user_dict['username'],
-        'user_type': user_dict['user_type'],
-        'page_name': 'admin_home_page',
-        'login_status': 'true',
+    user_id = request.POST.get('user_id')
 
-        'user_id_': request.POST.get('user_id'),
-        'user_type_': 0 if request.POST.get('user_id').split('-')[0] == 'S' else 1,
-    }
+    if user_id:
 
-    return render(request, 'main_app/user_approval_page.html', context=data_dict)
+        data_dict = {
+            'user_id': user_dict['user_id'],
+            'name': user_dict['name'],
+            'logged_in_username': user_dict['username'],
+            'user_type': user_dict['user_type'],
+            'page_name': 'admin_home_page',
+            'login_status': 'true',
+
+            'user_id_': user_id,
+            'user_type_': 0 if user_id.split('-')[0] == 'S' else 1,
+        }
+
+        return render(request, 'main_app/user_approval_page.html', context=data_dict)
+
+    else:
+        return requests_loader_page(request)
 
 
 def approve_user(request, user_id, user_type):
@@ -458,6 +468,7 @@ def login(request):
 
     try:
         user_id, password = cursor.fetchall()[0]
+        print(f'{user_id} {password}')
     except IndexError:
         return login_page(request)
 
@@ -471,7 +482,10 @@ def login(request):
     if password == get_password:
         password_verified = True
 
-    if password_verified:
+    c_user = classes.User()
+    c_user.load(user_id)
+
+    if password_verified and c_user.verified == 1:
 
         command = (
             "SELECT name FROM user " +
