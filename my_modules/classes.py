@@ -486,7 +486,6 @@ class AdsFeed:
 
         for ad in all_ads:
             if ad.approved == 1 and ad.active == 1:
-                print(f'ap_ac: {ad.approved}_{ad.active}')
                 self.ads_for_feed.append(ad)
 
     def get_feed_data_for(self, page_number):
@@ -495,7 +494,6 @@ class AdsFeed:
             page_number = 1
 
         if len(self.ads_for_feed) == 0:
-            print(f'ads_for_feed: {len(self.ads_for_feed)}')
             return {
                 'previous_page': page_number + 1,
                 'current_page': page_number - 1,
@@ -511,7 +509,7 @@ class AdsFeed:
 
         ads_to_show_start_idx = (page_number - 1) * 12
 
-        ads_to_show_end_idx = -1
+        ads_to_show_end_idx = ads_to_show_start_idx
         if page_number == total_pages:
             ads_to_show_end_idx += number_of_ads_at_last_page
         else:
@@ -521,7 +519,7 @@ class AdsFeed:
 
         # [ads_id, hostel_name, rating, thana, ins_pref, rent]
 
-        for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx + 1]:
+        for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx]:
 
             hostel = Hostel()
             hostel.load(self.ads_for_feed[i].hostel_id)
