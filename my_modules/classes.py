@@ -585,7 +585,7 @@ class Complaint:
 
         if complaint_count == 0:
             self.files['photo'].save(f'{settings.MEDIA_ROOT}/{self.photo}')
-            command = f'INSERT INTO complaint_box VALUES ({self.complaint_id},"{self.user_id}","{self.subject}","{self.complaint}","{self.photo}",{self.resolved})'
+            command = f'INSERT INTO complaint_box VALUES ("{self.complaint_id}","{self.user_id}","{self.subject}","{self.complaint}","{self.photo}",{self.resolved})'
         else:
             command = f'UPDATE complaint_box SET user_id = "{self.user_id}", subject = "{self.subject}", complaint = "{self.complaint}", photo = "{self.photo}", resolved = {self.resolved} WHERE complaint_id like "{self.complaint_id}"'
         cursor.execute(command)
