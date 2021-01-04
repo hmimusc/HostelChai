@@ -43,21 +43,31 @@
                         <p>
                              <div class="row">
                                 <div class="col">
-                                    <input class="form-control" type="text" name="s_name" placeholder="Name" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Name:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="text" name="s_name" placeholder="name" required>
+                                    </div>
                                 </div>
                                 <div class="col">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text">Birth date:</span>
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Birth date:</b></span>
                                         </div>
-                                        <input class="form-control dob" id="s_dob" type="date" name="s_dob">
+                                        <input class="form-control dob bg-dark text-light border border-info" id="s_dob" type="date" name="s_dob">
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <select class="form-control custom-select" name="s_gender" required>
-                                        <option value="male" selected>Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Gender:</b></span>
+                                        </div>
+                                        <select class="form-control custom-select bg-dark text-light border border-info" name="s_gender" required>
+                                            <option value="male" selected>Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </p>
@@ -65,13 +75,28 @@
                         <p>
                             <div class="row">
                                 <div class="col">
-                                    <input class="form-control" type="text" name="s_username" placeholder="Username" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Username:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="text" name="s_username" placeholder="username" required>
+                                    </div>
                                 </div>
                                 <div class="col">
-                                    <input class="form-control" type="password" name="s_password" placeholder="Password" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Password:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="password" name="s_password" placeholder="password" required>
+                                    </div>
                                 </div>
                                 <div class="col">
-                                    <input class="form-control" type="password" name="s_retype_password" placeholder="Retype password" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Retype password:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="password" name="s_retype_password" placeholder="retype password" required>
+                                    </div>
                                 </div>
                             </div>
                         </p>
@@ -79,10 +104,20 @@
                         <p>
                             <div class="row">
                                 <div class="col">
-                                    <input class="form-control" type="text" name="s_phone_number" placeholder="Phone" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Phone:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="text" name="s_phone_number" placeholder="phone" required>
+                                    </div>
                                 </div>
                                 <div class="col">
-                                    <input class="form-control" type="email" name="s_email" placeholder="Email" required>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-dark text-info border border-info"><b>Email:</b></span>
+                                        </div>
+                                        <input class="form-control bg-dark text-light border border-info" type="email" name="s_email" placeholder="email" required>
+                                    </div>
                                 </div>
                             </div>
                         </p>
@@ -90,37 +125,57 @@
                         <br>
 
                         <p>
-                            <textarea class="form-control" id="s_permanent_address" name="s_permanent_address" rows="2" placeholder="write your permanent address ..." required></textarea>
+                            <label class="text-info" for="s_permanent_address"><b>Permanent address:</b></label>
+                            <textarea class="form-control bg-dark text-light border border-info" id="s_permanent_address" name="s_permanent_address" rows="2" placeholder="write your permanent address ..." required></textarea>
                         </p>
 
                         <br>
 
                         <p>
-                            <input class="form-control" type="text" name="institution" placeholder="Institution name" required>
-                        </p>
+
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-dark text-info border border-info"><b>Select you institute:</b></span>
+                            </div>
+                            <select class="custom-select bg-dark text-light border border-info" name="institution" id="institution">
+                                {% for institution in institutions %}
+                                    <option value="{{ institution }}">{{ institution }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
                         <p>
-                            <div class="row">
-                                <div class="col">
-                                    <input class="form-control" type="text" name="degree" placeholder="Level" required>
-                                </div>
-                                <div class="col">
-                                    <input class="form-control" type="text" name="student_id" placeholder="ID" required>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-dark text-info border border-info"><b>Degree/Level:</b></span>
+                                    </div>
+                                    <input class="form-control bg-dark text-light border border-info" type="text" name="degree" placeholder="degree/level" required>
                                 </div>
                             </div>
-                        </p>
+                            <div class="col">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-dark text-info border border-info"><b>Student ID:</b></span>
+                                    </div>
+                                    <input class="form-control bg-dark text-white border border-info" type="text" name="student_id" placeholder="student id" required>
+                                </div>
+                            </div>
+                        </div>
 
                         <br>
 
                         <p>
                             <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Profile picture</span>
+                                    <span class="input-group-text bg-dark text-info border border-info"><b>Profile picture:</b></span>
                                 </div>
 
                                 <div class="custom-file">
                                     <input class="custom-file-input" id="s_profile_picture" type="file" name="s_profile_picture" required>
-                                    <label class="custom-file-label bg_custom" for="s_profile_picture">Choose file</label>
+                                    <label class="custom-file-label bg-dark text-info border border-info" for="s_profile_picture">Choose file</label>
                                 </div>
                             </div>
                         </p>
@@ -128,12 +183,12 @@
                         <p>
                              <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Clear image of the front of your NID</span>
+                                    <span class="input-group-text bg-dark text-info border border-info"><b>Clear image of the front of your NID:</b></span>
                                 </div>
 
                                 <div class="custom-file">
                                     <input class="custom-file-input" id="s_nid" type="file" name="s_nid">
-                                    <label class="custom-file-label bg_custom" for="s_nid">Choose file</label>
+                                    <label class="custom-file-label bg-dark text-info border border-info" for="s_nid">Choose file</label>
                                 </div>
                             </div>
                         </p>
@@ -141,12 +196,12 @@
                         <p>
                              <div class="input-group">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text">Clear image of your Birth certificate</span>
+                                    <span class="input-group-text bg-dark text-info border border-info"><b>Clear image of your Birth certificate:</b></span>
                                 </div>
 
                                 <div class="custom-file">
                                     <input class="custom-file-input" id="s_birth_certificate" type="file" name="s_birth_certificate">
-                                    <label class="custom-file-label bg_custom" for="s_birth_certificate">Choose file</label>
+                                    <label class="custom-file-label bg-dark text-info border border-info" for="s_birth_certificate">Choose file</label>
                                 </div>
                             </div>
                         </p>

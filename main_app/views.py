@@ -369,6 +369,9 @@ def registration_page(request):
         'login_status': 'false',
     }
 
+    ins_file = open(f'{text_files_dir}/institution_names.txt', 'r')
+    data_dict['institutions'] = ins_file.readlines()[1:]
+
     return render(request, 'main_app/registration_page.html', context=data_dict)
 
 
