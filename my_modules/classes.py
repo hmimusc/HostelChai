@@ -495,9 +495,9 @@ class AdsFeed:
 
         if len(self.ads_for_feed) == 0:
             return {
-                'previous_page': page_number + 1,
-                'current_page': page_number - 1,
-                'next_page': page_number,
+                'previous_page': page_number - 1,
+                'current_page': page_number,
+                'next_page': page_number + 1,
                 'pages': [[1, 'active']],
             }
 
@@ -537,9 +537,9 @@ class AdsFeed:
         pages[page_number][1] = 'active'
 
         return {
-            'previous_page': page_number + 1,
-            'current_page': page_number - 1,
-            'next_page': page_number,
+            'previous_page': page_number - 1,
+            'current_page': page_number,
+            'next_page': page_number + 1,
             'pages': pages[1:],
             'ads': ads,
         }
