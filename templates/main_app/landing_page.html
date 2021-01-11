@@ -35,9 +35,13 @@
 
                         <br>
                         <div class="input-group">
-                            <input class="form-control bg-secondary" type="text" name="search_keywords">
+                            <select class="custom-select bg-transparent border border-info text-info" name="location" id="location">
+                                {% for thana in thanas %}
+                                    <option value="{{ thana }}">{{ thana }}</option>
+                                {% endfor %}
+                            </select>
                             <div class="input-group-append">
-                                <input class="form-control btn btn-outline-success" type="submit" value="Search">
+                                <input class="btn btn-outline-info" type="submit" value="Find">
                             </div>
                         </div>
                     </form>
@@ -51,7 +55,7 @@
                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
                     </p>
                     <br>
-                    <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:registration_page' %}">Register to Post</a>
+                    <a class="btn btn-outline-info btn-block" href="{% url 'main_app:registration_page' %}">Register to Post</a>
                 </div>
             </div>
         </div>
@@ -62,7 +66,7 @@
                 <div class="row">
                     <div class="col-5"></div>
                     <div class="col-2">
-                        <a class="btn btn-outline-secondary btn-block" href="{% url 'main_app:registration_page' %}">Register</a>
+                        <a class="btn btn-outline-info btn-block" href="{% url 'main_app:registration_page' %}">Register</a>
                     </div>
                     <div class="col-5"></div>
                 </div>
