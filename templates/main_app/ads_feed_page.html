@@ -37,7 +37,7 @@
                         </div>
                         <select class="custom-select bg-transparent border border-info text-info" name="location" id="location">
                             {% for thana in thanas %}
-                                <option class="bg-transparent" value="{{ thana.0 }} {{ thana.1 }}">{{ thana.0 }}</option>
+                                <option class="bg-transparent" value="{{ thana.0 }}" {{ thana.1 }}>{{ thana.0 }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -51,7 +51,7 @@
                             </div>
                             <select class="custom-select bg-transparent border border-info text-info" name="institute" id="institute">
                                 {% for institute in institutes %}
-                                    <option class="bg-transparent" value="{{ institute.0 }} {{ institute.1 }}">{{ institute.0 }}</option>
+                                    <option class="bg-transparent" value="{{ institute.0 }}" {{ institute.1 }}>{{ institute.0 }}</option>
                                 {% endfor %}
                             </select>
                         </div>

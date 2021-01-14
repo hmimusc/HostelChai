@@ -489,11 +489,11 @@ class AdsFeed:
                 self.ads_for_feed.append(ad)
 
         self.criteria = {
-            'location': request.POST.get('location'),
-            'institute': request.POST.get('institute'),
+            'location': 'Any' if not request.POST.get('location') else request.POST.get('location'),
+            'institute': 'Any' if not request.POST.get('institute') else request.POST.get('institute'),
             'budget': {
                 'from': 0 if not request.POST.get('budget_from') else int(request.POST.get('budget_from')),
-                'to': math.inf if not request.POST.get('budget_to') else int(request.POST.get('budget_to')),
+                'to': math.inf if not request.POST.get('budget_to') or request.POST.get('budget_to') == 'inf' else int(request.POST.get('budget_to')),
             },
         }
 
@@ -518,6 +518,14 @@ class AdsFeed:
         self.ads_for_feed = new_ads_for_feed
 
     def get_feed_data_for(self, page_number):
+
+        for t in utilities.all_thana():
+            [print(f'>{c}< ', end='') for c in t.split('\n')[0]]
+            print('')
+            [print(f'>{c}< ', end='') for c in self.criteria["location"].split('\n')[0]]
+            print('')
+            if t == self.criteria['location']:
+                print("[+] Selected !!!")
 
         criteria_dict = {
             'thanas': [[thana, 'selected' if thana == self.criteria['location'] else ''] for thana in utilities.all_thana()],
