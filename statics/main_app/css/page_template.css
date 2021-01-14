@@ -3,6 +3,15 @@ body {
     background-size: cover;
 }
 
+.navbar-brand {
+    color: #24eff6 !important;
+}
+
+.navbar-brand:hover {
+    color: #24eff6;
+    text-shadow: 0 0 2px lime;
+}
+
 .header{
     font-size: 3.5rem;
 }
@@ -22,6 +31,25 @@ body {
     padding-bottom: 16px;
 }
 
-/*.border-info{*/
-/*    border-width: 2px !important;*/
-/*}*/
+.form-control:focus {
+    background-color: #09181d;
+    caret-color: #24eff6;
+    color: #24eff6;
+    box-shadow: 0 0 5px #24eff6;
+}
+.form-control:hover {
+    background-color: #343a40;
+}
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:focus,
+.form-control:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #343a40 inset !important;
+}
+
+.form-control:-webkit-autofill:hover {
+    -webkit-box-shadow: 0 0 0 30px #343a40 inset !important;
+}
+
+.form-control:-webkit-autofill {
+    -webkit-text-fill-color: #f8f9fa !important;
+}

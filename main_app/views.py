@@ -471,7 +471,6 @@ def login(request):
 
     try:
         user_id, password = cursor.fetchall()[0]
-        print(f'{user_id} {password}')
     except IndexError:
         return login_page(request)
 
@@ -570,7 +569,10 @@ def landing_page(request):
     data_dict = {
         'page_name': 'landing_page',
         'login_status': 'false',
+        'thanas': utilities.all_thana()
     }
+
+    data_dict['thanas'][0] = 'Any'
 
     try:
         page_works.request_verify(request, False)
@@ -813,11 +815,7 @@ def add_hostel_page(request):
         'login_status': 'true',
     }
 
-    file = open(text_files_dir + '\\thanas.txt', 'r')
-    thanas = file.readlines()
-    file.close()
-
-    data_dict['thanas'] = thanas
+    data_dict['thanas'] = utilities.all_thana()
 
     return render(request, 'main_app/add_hostel_page.html', context=data_dict)
 
@@ -990,6 +988,7 @@ def ads_feed_page(request, page_number):
     data_dict = {}
 
     if login_status == 'true':
+
         user_dict = page_works.get_active_user(request)
         data_dict = {
             'user_id': user_dict['user_id'],
@@ -999,13 +998,14 @@ def ads_feed_page(request, page_number):
             'page_name': 'ad_feed_page',
             'login_status': 'true',
         }
+
     else:
         data_dict = {
             'page_name': 'ads_feed_page',
             'login_status': 'false',
         }
 
-    data_dict = utilities.add_dictionary(data_dict, classes.AdsFeed().get_feed_data_for(page_number))
+    data_dict = utilities.add_dictionary(data_dict, classes.AdsFeed(request).get_feed_data_for(page_number))
 
     return render(request, 'main_app/ads_feed_page.html', context=data_dict)
 

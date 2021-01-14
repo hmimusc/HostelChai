@@ -17,29 +17,30 @@
                 <a class="navbar-brand" href="{% url 'main_app:landing_page' %}"><b>HOSTEL CHAI ?</b></a>
 
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:ads_feed_page' page_number=1 %}">Feed</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'main_app:ads_feed_page' page_number=1 %}">Feed</a></li>
 
                     {% if user_type == 'H' %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:add_hostel_page' %}">Add Hostel</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:ad_posting_page' %}">Post ad.</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Manage ads.</a></li>
+                        <li class="nav-item"><a class="nav-link text-info" href="{% url 'main_app:add_hostel_page' %}">Add Hostel</a></li>
+                        <li class="nav-item"><a class="nav-link text-info" href="{% url 'main_app:ad_posting_page' %}">Post ad.</a></li>
+                        <li class="nav-item"><a class="nav-link text-info" href="#">Manage ads.</a></li>
                     {% elif user_type == 'S' %}
-                        <li class="nav-item"><a class="nav-link" href="#">Find a Hostel</a></li>
+                        <li class="nav-item"><a class="nav-link text-info" href="#">Find a Hostel</a></li>
                     {% elif user_type == 'A' %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'main_app:requests_loader_page' %}">Approval requests</a></li>
+                        <li class="nav-item"><a class="nav-link text-info" href="{% url 'main_app:requests_loader_page' %}">Approval requests</a></li>
                     {% endif %}
 
-                    <li class="nav-item"><a class="nav-link" href="{% url 'main_app:test_page' %}">Test Page</a></li>
+                    <li class="nav-item"><a class="nav-link text-info" href="{% url 'main_app:test_page' %}">Test Page</a></li>
                 </ul>
 
                 <ul class="navbar-nav justify-content-end">
                     {% if login_status == "true" %}
                         <li class="nav-item">
-                            <div class="dropdown bg">
-                                <button class="btn btn-secondary text-dark dropdown-toggle" id="logged_in_user_options" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <b>{{ name }}</b>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-info text-dark"><b>{{ name }}</b></button>
+                                <button type="button" class="btn btn-outline-info dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="sr-only">Toggle Dropdown</span>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-left bg-secondary" aria-labelledby="dropdownMenuOffset">
+                                <div class="dropdown-menu">
                                     {% if user_type == 'A' %}
                                         <a class="dropdown-item" href="{% url 'main_app:profile_page' user=9 user_id=user_id %}">Profile</a>
                                     {% elif user_type == 'S' %}
@@ -53,10 +54,12 @@
                                     {% else %}
                                         <a class="dropdown-item" href="{% url 'main_app:complaint_box_page' %}">Complaint box</a>
                                     {% endif %}
+                                    <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{% url 'main_app:logout' %}">Logout</a>
                                 </div>
                             </div>
                         </li>
+
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:registration_page' %}">Register</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'main_app:login_page' %}">Login</a></li>

@@ -34,12 +34,12 @@
                     <form class="form-group" action="{% url 'main_app:login' %}" method="post">
                         {% csrf_token %}
 
-                        <p><input class="form-control" id="username" name="username" type="text" value="{{ username }}" placeholder="Username" required></p>
-                        <p><input class="form-control" id="password" name="password" type="password" placeholder="Password" required></p>
+                        <p><input class="form-control bg-transparent border border-info text-info" id="username" name="username" type="text" value="{{ username }}" placeholder="Username" required></p>
+                        <p><input class="form-control bg-transparent border border-info text-info" id="password" name="password" type="password" placeholder="Password" required></p>
 
                         <br>
 
-                        <input class="btn btn-outline-success btn-block" id="submit" type="submit" value="Login">
+                        <input class="btn btn-info btn-block" id="submit" type="submit" value="Login">
                     </form>
                 </div>
             </div>
