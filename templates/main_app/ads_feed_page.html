@@ -20,7 +20,7 @@
             <h1 class="text-dark text-center header">Posts</h1>
         </div>
 
-        <form class="form-group" action="{% url 'main_app:ads_feed_page' page_number=1 %}" method="post">
+        <form class="form-group" action="{% url 'main_app:ads_feed_page' page_number=0 location='null' institute='null' budget_from='null' budget_to='null' %}" method="post">
 
             {% csrf_token %}
 

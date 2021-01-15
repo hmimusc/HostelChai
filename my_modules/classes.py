@@ -478,7 +478,7 @@ class InstitutionPreference:
 
 class AdsFeed:
 
-    def __init__(self, request):
+    def __init__(self, criteria_dict):
 
         all_ads = database.load_advertisements()
 
@@ -488,14 +488,7 @@ class AdsFeed:
             if ad.approved == 1 and ad.active == 1:
                 self.ads_for_feed.append(ad)
 
-        self.criteria = {
-            'location': 'Any' if not request.POST.get('location') else request.POST.get('location'),
-            'institute': 'Any' if not request.POST.get('institute') else request.POST.get('institute'),
-            'budget': {
-                'from': 0 if not request.POST.get('budget_from') else int(request.POST.get('budget_from')),
-                'to': math.inf if not request.POST.get('budget_to') or request.POST.get('budget_to') == 'inf' else int(request.POST.get('budget_to')),
-            },
-        }
+        self.criteria = criteria_dict
 
         self.__apply_location_filter()
         self.__apply_institution_filter()
