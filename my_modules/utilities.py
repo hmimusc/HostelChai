@@ -14,13 +14,13 @@ def add_dictionary(dict_1, dict_2):
 
 def all_thana():
     file = open(f'{os.path.join(settings.BASE_DIR, "text_files")}/thanas.txt')
-    thanas = file.readlines()
+    thanas = [t.split('\n')[0] for t in file.readlines()]
     file.close()
     return thanas
 
 
 def all_institutes():
     file = open(f'{os.path.join(settings.BASE_DIR, "text_files")}/institution_names.txt')
-    institutes = file.readlines()
+    institutes = [t.split('\n')[0] for t in file.readlines()]
     file.close()
     return institutes
