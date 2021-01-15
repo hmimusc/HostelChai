@@ -24,6 +24,16 @@
             {% endif %}
         </div>
 
+        <div class="jumbotron header_layer_1 bg-transparent">
+            <div class="jumbotron header_layer_2 bg-transparent">
+                {% if loaded_complaint_id == 'null' or all_resolved == 'true' %}
+                    <h1 class="text-center text-info header">Check complaints</h1>
+                {% else %}
+                    <h1 class="text-center text-info header">Complaint ID: {{ loaded_complaint_id }}</h1>
+                {% endif %}
+            </div>
+        </div>
+
         {% if all_resolved == 'true' %}
             <div class="jumbotron jumbotron_suffix bg-dark">
                 <h1 class="text-center text-secondary">No complaints to resolve.</h1>

@@ -478,7 +478,7 @@ class InstitutionPreference:
 
 class AdsFeed:
 
-    def __init__(self, request):
+    def __init__(self, criteria_dict):
 
         all_ads = database.load_advertisements()
 
@@ -488,28 +488,24 @@ class AdsFeed:
             if ad.approved == 1 and ad.active == 1:
                 self.ads_for_feed.append(ad)
 
-        self.criteria = {
-            'location': 'Any' if not request.POST.get('location') else request.POST.get('location'),
-            'institute': 'Any' if not request.POST.get('institute') else request.POST.get('institute'),
-            'budget': {
-                'from': 0 if not request.POST.get('budget_from') else int(request.POST.get('budget_from')),
-                'to': math.inf if not request.POST.get('budget_to') or request.POST.get('budget_to') == 'inf' else int(request.POST.get('budget_to')),
-            },
-        }
+        self.criteria = criteria_dict
 
         self.__apply_location_filter()
         self.__apply_institution_filter()
         self.__apply_budget_filter()
 
     def __apply_location_filter(self):
+
         if self.criteria['location'] != 'Any':
+
             new_ads_for_feed = []
+
             for ad in self.ads_for_feed:
-                i = ad.hostel_id
                 hostel = Hostel()
-                hostel.load(i)
+                hostel.load(ad.hostel_id)
                 if self.criteria['location'] == hostel.thana:
                     new_ads_for_feed.append(ad)
+
             self.ads_for_feed = new_ads_for_feed
 
     def __apply_institution_filter(self):
@@ -541,6 +537,10 @@ class AdsFeed:
             'institutes': [[institute, 'selected' if institute == self.criteria['institute'] else ''] for institute in utilities.all_institutes()],
             'budget_from': self.criteria['budget']['from'],
             'budget_to': self.criteria['budget']['to'],
+            'url_location': self.criteria['location'],
+            'url_institute': self.criteria['institute'],
+            'url_budget_from': self.criteria['budget']['from'],
+            'url_budget_to': self.criteria['budget']['to'],
         }
 
         criteria_dict['thanas'] = [['Any', '']] + criteria_dict['thanas']
@@ -551,9 +551,9 @@ class AdsFeed:
 
         if len(self.ads_for_feed) == 0:
             return utilities.add_dictionary(criteria_dict, {
-                'previous_page': page_number - 1,
-                'current_page': page_number,
-                'next_page': page_number + 1,
+                'previous_page': 1,
+                'current_page': 1,
+                'next_page': 1,
                 'pages': [[1, 'active']],
             })
 
@@ -593,9 +593,9 @@ class AdsFeed:
         pages[page_number][1] = 'active'
 
         return utilities.add_dictionary(criteria_dict, {
-            'previous_page': page_number - 1,
+            'previous_page': page_number if page_number == 1 else page_number - 1,
             'current_page': page_number,
-            'next_page': page_number + 1,
+            'next_page': page_number if page_number == total_pages else page_number + 1,
             'pages': pages[1:],
             'ads': ads,
         })
