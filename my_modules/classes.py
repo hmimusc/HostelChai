@@ -505,7 +505,17 @@ class AdsFeed:
         pass
 
     def __apply_institution_filter(self):
-        pass
+
+        if self.criteria['institute'] != 'Any':
+
+            new_ads_for_feed = []
+
+            for ad in self.ads_for_feed:
+                print(f"[+] Ins: {self.criteria['institute']} - {ad.preferred_institutions.institutions}")
+                if self.criteria['institute'] in ad.preferred_institutions.institutions:
+                    new_ads_for_feed.append(ad)
+
+            self.ads_for_feed = new_ads_for_feed
 
     def __apply_budget_filter(self):
 
@@ -518,14 +528,6 @@ class AdsFeed:
         self.ads_for_feed = new_ads_for_feed
 
     def get_feed_data_for(self, page_number):
-
-        for t in utilities.all_thana():
-            [print(f'>{c}< ', end='') for c in t.split('\n')[0]]
-            print('')
-            [print(f'>{c}< ', end='') for c in self.criteria["location"].split('\n')[0]]
-            print('')
-            if t == self.criteria['location']:
-                print("[+] Selected !!!")
 
         criteria_dict = {
             'thanas': [[thana, 'selected' if thana == self.criteria['location'] else ''] for thana in utilities.all_thana()],
