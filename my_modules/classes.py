@@ -502,7 +502,15 @@ class AdsFeed:
         self.__apply_budget_filter()
 
     def __apply_location_filter(self):
-        pass
+        if self.criteria['location'] != 'Any':
+            new_ads_for_feed = []
+            for ad in self.ads_for_feed:
+                i = ad.hostel_id
+                hostel = Hostel()
+                hostel.load(i)
+                if self.criteria['location'] == hostel.thana:
+                    new_ads_for_feed.append(ad)
+            self.ads_for_feed = new_ads_for_feed
 
     def __apply_institution_filter(self):
 
