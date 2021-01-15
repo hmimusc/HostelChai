@@ -812,9 +812,8 @@ def add_hostel_page(request):
         'user_type': user_dict['user_type'],
         'page_name': 'hostel_owner_home_page',
         'login_status': 'true',
+        'thanas': utilities.all_thana()
     }
-
-    data_dict['thanas'] = utilities.all_thana()
 
     return render(request, 'main_app/add_hostel_page.html', context=data_dict)
 
@@ -1007,6 +1006,7 @@ def ads_feed_page(request, page_number, location, institute, budget_from, budget
     criteria_dict = {}
 
     if page_number == 0 and location == 'null':
+
         criteria_dict = {
             'location': 'Any' if not request.POST.get('location') else request.POST.get('location'),
             'institute': 'Any' if not request.POST.get('institute') else request.POST.get('institute'),
