@@ -16,8 +16,11 @@
     {% endblock %}
 
     {% block main_block %}
-        <div class="jumbotron jumbotron_suffix_unified bg-secondary">
-            <h1 class="text-dark text-center header">Posts</h1>
+
+        <div class="jumbotron header_layer_1 bg-transparent">
+            <div class="jumbotron header_layer_2 bg-transparent">
+                <h1 class="text-info text-center header">Posts</h1>
+            </div>
         </div>
 
         <form class="form-group" action="{% url 'main_app:ads_feed_page' page_number=0 location='null' institute='null' budget_from='null' budget_to='null' %}" method="post">
@@ -37,7 +40,7 @@
                         </div>
                         <select class="custom-select bg-transparent border border-info text-info" name="location" id="location">
                             {% for thana in thanas %}
-                                <option class="bg-transparent" value="{{ thana.0 }}" {{ thana.1 }}>{{ thana.0 }}</option>
+                                <option class="text-info bg-dark" value="{{ thana.0 }}" {{ thana.1 }}>{{ thana.0 }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -51,7 +54,7 @@
                             </div>
                             <select class="custom-select bg-transparent border border-info text-info" name="institute" id="institute">
                                 {% for institute in institutes %}
-                                    <option class="bg-transparent" value="{{ institute.0 }}" {{ institute.1 }}>{{ institute.0 }}</option>
+                                    <option class="text-info bg-dark" value="{{ institute.0 }}" {{ institute.1 }}>{{ institute.0 }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -75,13 +78,13 @@
 
         <nav>
             <ul class="pagination justify-content-center">
-                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=previous_page %}">Previous</a></li>
+                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=previous_page location=url_location institute=url_institute budget_from=url_budget_from budget_to=url_budget_to %}">Previous</a></li>
 
                 {% for page in pages %}
-                    <li class="page-item"><a class="btn btn-outline-info {{ page.1 }}" href="{% url 'main_app:ads_feed_page' page_number=page.0 %}">{{ page.0 }}</a></li>
+                    <li class="page-item"><a class="btn btn-outline-info {{ page.1 }}" href="{% url 'main_app:ads_feed_page' page_number=page.0 location=url_location institute=url_institute budget_from=url_budget_from budget_to=url_budget_to %}">{{ page.0 }}</a></li>
                 {% endfor %}
 
-                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=next_page %}">Next</a></li>
+                <li class="page-item"><a class="btn btn-outline-info" href="{% url 'main_app:ads_feed_page' page_number=next_page location=url_location institute=url_institute budget_from=url_budget_from budget_to=url_budget_to %}">Next</a></li>
             </ul>
         </nav>
 

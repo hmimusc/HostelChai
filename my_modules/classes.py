@@ -495,7 +495,18 @@ class AdsFeed:
         self.__apply_budget_filter()
 
     def __apply_location_filter(self):
-        pass
+
+        if self.criteria['location'] != 'Any':
+
+            new_ads_for_feed = []
+
+            for ad in self.ads_for_feed:
+                hostel = Hostel()
+                hostel.load(ad.hostel_id)
+                if self.criteria['location'] == hostel.thana:
+                    new_ads_for_feed.append(ad)
+
+            self.ads_for_feed = new_ads_for_feed
 
     def __apply_institution_filter(self):
 
@@ -526,6 +537,10 @@ class AdsFeed:
             'institutes': [[institute, 'selected' if institute == self.criteria['institute'] else ''] for institute in utilities.all_institutes()],
             'budget_from': self.criteria['budget']['from'],
             'budget_to': self.criteria['budget']['to'],
+            'url_location': self.criteria['location'],
+            'url_institute': self.criteria['institute'],
+            'url_budget_from': self.criteria['budget']['from'],
+            'url_budget_to': self.criteria['budget']['to'],
         }
 
         criteria_dict['thanas'] = [['Any', '']] + criteria_dict['thanas']

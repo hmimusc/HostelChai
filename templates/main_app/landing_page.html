@@ -17,8 +17,10 @@
 
     {% block main_block %}
 
-        <div class="jumbotron jumbotron_suffix_unified bg-secondary">
-            <h1 class="text text-center text-dark header">Welcome to <span id="brand">HOSTEL CHAI ?</span></h1>
+        <div class="jumbotron header_layer_1 bg-transparent">
+            <div class="jumbotron header_layer_2 bg-transparent">
+                <h1 class="text-info text-center header"><span id="brand">HOSTEL CHAI ?</span></h1>
+            </div>
         </div>
 
         <div class="row">
@@ -37,7 +39,7 @@
                         <div class="input-group">
                             <select class="custom-select bg-transparent border border-info text-info" name="location" id="location">
                                 {% for thana in thanas %}
-                                    <option value="{{ thana }}">{{ thana }}</option>
+                                    <option class="bg-dark" value="{{ thana }}">{{ thana }}</option>
                                 {% endfor %}
                             </select>
                             <div class="input-group-append">
