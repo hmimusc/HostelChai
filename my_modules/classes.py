@@ -551,9 +551,9 @@ class AdsFeed:
 
         if len(self.ads_for_feed) == 0:
             return utilities.add_dictionary(criteria_dict, {
-                'previous_page': page_number - 1,
-                'current_page': page_number,
-                'next_page': page_number + 1,
+                'previous_page': 1,
+                'current_page': 1,
+                'next_page': 1,
                 'pages': [[1, 'active']],
             })
 
@@ -593,9 +593,9 @@ class AdsFeed:
         pages[page_number][1] = 'active'
 
         return utilities.add_dictionary(criteria_dict, {
-            'previous_page': page_number - 1,
+            'previous_page': page_number if page_number == 1 else page_number - 1,
             'current_page': page_number,
-            'next_page': page_number + 1,
+            'next_page': page_number if page_number == total_pages else page_number + 1,
             'pages': pages[1:],
             'ads': ads,
         })
