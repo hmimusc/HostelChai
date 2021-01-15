@@ -966,7 +966,6 @@ def ad_posting(request):
             'room_photo_2': request.FILES['room_photo_2'],
             'room_photo_3': request.FILES['room_photo_3'],
         }
-
     )
 
     new_advertise.save()
@@ -1009,16 +1008,18 @@ def ads_feed_page(request, page_number, location, institute, budget_from, budget
 
         location = 'Any' if not request.POST.get('location') else request.POST.get('location')
         institute = 'Any' if not request.POST.get('institute') else request.POST.get('institute')
+        budget_from = request.POST.get('budget_from')
+        budget_to = request.POST.get('budget_to')
 
         try:
             budget_from = int(budget_from)
-        except:
+        except ValueError:
             budget_from = 0
 
-        if budget_to != 'inf':
+        if request.POST.get('budget_to') != 'inf':
             try:
                 budget_to = int(budget_to)
-            except:
+            except ValueError:
                 budget_to = 'inf'
 
     criteria_dict = {
