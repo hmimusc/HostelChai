@@ -501,8 +501,9 @@ class AdsFeed:
             new_ads_for_feed = []
 
             for ad in self.ads_for_feed:
+                i = ad.hostel_id
                 hostel = Hostel()
-                hostel.load(ad.hostel_id)
+                hostel.load(i)
                 if self.criteria['location'] == hostel.thana:
                     new_ads_for_feed.append(ad)
 
