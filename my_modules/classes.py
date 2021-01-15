@@ -92,43 +92,43 @@ class User:
             self.files['birth_certificate'].save(f'{settings.MEDIA_ROOT}/{self.birth_certificate}')
 
             command = (
-                    f'insert into user values (' +
-                    f'"{self.id}", ' +
-                    f'"{self.name}", ' +
-                    f'"{self.username}", ' +
-                    f'"{self.password}", ' +
-                    f'"{self.profile_picture}", ' +
-                    f'"{self.dob}", ' +
-                    f'"{self.nid}", ' +
-                    f'"{self.birth_certificate}", ' +
-                    f'"{self.gender}", ' +
-                    f'"{self.phone_number}", ' +
-                    f'"{self.email}", ' +
-                    f'"{self.permanent_address}", ' +
-                    f'{self.verified}, ' +
-                    f'{self.user_type}' +
-                    f')'
+                f'insert into user values (' +
+                f'"{self.id}", ' +
+                f'"{self.name}", ' +
+                f'"{self.username}", ' +
+                f'"{self.password}", ' +
+                f'"{self.profile_picture}", ' +
+                f'"{self.dob}", ' +
+                f'"{self.nid}", ' +
+                f'"{self.birth_certificate}", ' +
+                f'"{self.gender}", ' +
+                f'"{self.phone_number}", ' +
+                f'"{self.email}", ' +
+                f'"{self.permanent_address}", ' +
+                f'{self.verified}, ' +
+                f'{self.user_type}' +
+                f')'
             )
             cursor.execute(command)
         else:
 
             command = (
-                    f'update user set ' +
-                    # f'id="{self.id}", ' +
-                    f'name="{self.name}", ' +
-                    f'username="{self.username}", ' +
-                    f'password="{self.password}", ' +
-                    f'profile_picture="{self.profile_picture}", ' +
-                    f'dob="{self.dob}", ' +
-                    f'nid="{self.nid}", ' +
-                    f'birth_certificate="{self.birth_certificate}", ' +
-                    f'gender="{self.gender}", ' +
-                    f'phone_number="{self.phone_number}", ' +
-                    f'email="{self.email}", ' +
-                    f'permanent_address="{self.permanent_address}", ' +
-                    f'verified={self.verified}, ' +
-                    f'user_type={self.user_type} ' +
-                    f'where id like "{self.id}"'
+                f'update user set ' +
+                # f'id="{self.id}", ' +
+                f'name="{self.name}", ' +
+                f'username="{self.username}", ' +
+                f'password="{self.password}", ' +
+                f'profile_picture="{self.profile_picture}", ' +
+                f'dob="{self.dob}", ' +
+                f'nid="{self.nid}", ' +
+                f'birth_certificate="{self.birth_certificate}", ' +
+                f'gender="{self.gender}", ' +
+                f'phone_number="{self.phone_number}", ' +
+                f'email="{self.email}", ' +
+                f'permanent_address="{self.permanent_address}", ' +
+                f'verified={self.verified}, ' +
+                f'user_type={self.user_type} ' +
+                f'where id like "{self.id}"'
             )
 
             cursor.execute(command)
@@ -511,7 +511,6 @@ class AdsFeed:
             new_ads_for_feed = []
 
             for ad in self.ads_for_feed:
-                print(f"[+] Ins: {self.criteria['institute']} - {ad.preferred_institutions.institutions}")
                 if self.criteria['institute'] in ad.preferred_institutions.institutions:
                     new_ads_for_feed.append(ad)
 
