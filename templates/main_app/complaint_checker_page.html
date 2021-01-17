@@ -16,13 +16,6 @@
     {% endblock %}
 
     {% block main_block %}
-        <div class="jumbotron jumbotron_suffix_unified bg-secondary">
-            {% if loaded_complaint_id == 'null' or all_resolved == 'true' %}
-                <h1 class="text-center text-dark header">Check complaints</h1>
-            {% else %}
-                <h1 class="text-center text-dark header">Complaint ID: {{ loaded_complaint_id }}</h1>
-            {% endif %}
-        </div>
 
         <div class="jumbotron header_layer_1 bg-transparent">
             <div class="jumbotron header_layer_2 bg-transparent">

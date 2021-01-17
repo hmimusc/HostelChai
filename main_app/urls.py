@@ -10,8 +10,8 @@ app_name = 'main_app'
 
 urlpatterns = [
     path('', views.landing_page, name='landing_page'),
-    # path('setup_admin_page/', views.setup_admin_page, name='setup_admin_page'),
-    # path('setup_admin/', views.setup_admin, name='setup_admin'),
+    path('setup_admin_page/', views.setup_admin_page, name='setup_admin_page'),
+    path('setup_admin/', views.setup_admin, name='setup_admin'),
     path('requests_loader_page/', views.requests_loader_page, name='requests_loader_page'),
     path('requests_loader/', views.requests_loader, name='requests_loader'),
     path('ad_approval_page/', views.ad_approval_page, name='ad_approval_page'),
