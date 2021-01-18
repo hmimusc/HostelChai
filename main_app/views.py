@@ -910,8 +910,7 @@ def ad_posting_page(request):
         if hostel.hostel_owner_id == user_dict['user_id'] and hostel.verified == 1:
             hostel_id_name.append(f'{hostel.hostel_id} {hostel.hostel_name}')
 
-    ins_file = open(f'{text_files_dir}/institution_names.txt', 'r')
-    ins_names = ins_file.readlines()
+    ins_names = utilities.all_institutes()
 
     data_dict = {
         'user_id': user_dict['user_id'],
