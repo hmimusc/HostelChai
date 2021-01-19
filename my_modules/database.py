@@ -42,7 +42,7 @@ def load_hostel_ratings():
 
 
 def load_advertisements():
-    command = f'select ads_id from advertise'
+    command = f'select ads_id from advertise order by ads_id'
     try:
         print('something is wrong ????????')
         cursor.execute(command)

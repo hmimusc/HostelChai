@@ -1012,13 +1012,13 @@ def ads_feed_page(request, page_number, location, institute, budget_from, budget
 
         try:
             budget_from = int(budget_from)
-        except ValueError or TypeError:
+        except:
             budget_from = 0
 
         if request.POST.get('budget_to') != 'inf':
             try:
                 budget_to = int(budget_to)
-            except ValueError or TypeError:
+            except:
                 budget_to = 'inf'
 
     criteria_dict = {
