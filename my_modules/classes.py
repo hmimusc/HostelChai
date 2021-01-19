@@ -432,6 +432,7 @@ class Advertise:
         else:
             cmd = f'UPDATE advertise SET hostel_id="{self.hostel_id}", room_description="{self.room_description}", meal_description="{self.meal_description}", facilities_description="{self.facilities_description}", rent="{self.rent}", rules="{self.rules}", conditions="{self.conditions}", per_room_seats="{self.per_room_seats}", total_seats="{self.total_seats}", room_photo="{self.room_photo}", approved="{self.approved}", active="{self.active}" WHERE ads_id="{self.ads_id}"'
 
+        print(f'INS: {self.preferred_institutions.institutions}')
         self.preferred_institutions.save()
 
         cursor.execute(cmd)
@@ -460,20 +461,18 @@ class InstitutionPreference:
 
     def save(self):
 
-        if self.institutions[0] != '<No-preference>':
+        command = f'delete from preferred_institutions where ads_id like "{self.ads_id}"'
+        cursor.execute(command)
 
-            command = f'delete from preferred_institutions where ads_id like "{self.ads_id}"'
-            cursor.execute(command)
+        command = 'insert into preferred_institutions values '
+        for i in range(len(self.institutions)):
+            command += f'("{self.ads_id}", "{self.institutions[i]}")'
+            if i == len(self.institutions) - 1:
+                command += ' '
+            else:
+                command += ', '
 
-            command = 'insert into preferred_institutions values '
-            for i in range(len(self.institutions)):
-                command += f'("{self.ads_id}", "{self.institutions[i]}")'
-                if i == len(self.institutions) - 1:
-                    command += ' '
-                else:
-                    command += ', '
-
-            cursor.execute(command)
+        cursor.execute(command)
 
 
 class AdsFeed:
