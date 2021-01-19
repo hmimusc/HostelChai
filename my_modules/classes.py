@@ -559,7 +559,7 @@ class AdsFeed:
             })
 
         total_pages = math.ceil(len(self.ads_for_feed)/12)
-        number_of_ads_at_last_page = len(self.ads_for_feed) % 12
+        number_of_ads_at_last_page = len(self.ads_for_feed) % 12 if len(self.ads_for_feed) % 12 != 0 else 0 if len(self.ads_for_feed) == 0 else 12
 
         if page_number > total_pages:
             page_number = total_pages
@@ -575,6 +575,8 @@ class AdsFeed:
         ads = [[], [], []]
 
         # [ads_id, hostel_name, rating, thana, ins_pref, rent]
+
+        print(f'[+] {ads_to_show_start_idx} - {ads_to_show_end_idx}')
 
         for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx]:
 

@@ -43,9 +43,13 @@ def load_hostel_ratings():
 
 def load_advertisements():
     command = f'select ads_id from advertise'
-    cursor.execute(command)
+    try:
+        print('something is wrong ????????')
+        cursor.execute(command)
+    except:
+        print('something is wrong !!!!!!!!')
 
-    ads_ids = [id[0] for id in list(cursor.fetchall())]
+    ads_ids = [_id[0] for _id in list(cursor.fetchall())]
 
     ads = []
 
