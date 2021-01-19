@@ -576,8 +576,6 @@ class AdsFeed:
 
         # [ads_id, hostel_name, rating, thana, ins_pref, rent]
 
-        print(f'[+] {ads_to_show_start_idx} - {ads_to_show_end_idx}')
-
         for i in range(len(self.ads_for_feed))[ads_to_show_start_idx:ads_to_show_end_idx]:
 
             hostel = Hostel()
