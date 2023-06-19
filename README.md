@@ -6,10 +6,6 @@
 According to UGC (University Grants Commission, Bangladesh) Report, there are 107 private universities in Bangladesh, there are more than 50 private universities and approximately 150 colleges in Dhaka city and most of these universities and colleges are not providing the resident facilities to their students. So, it’s a tough job for students to find the perfect hostel for him or her when he or she comes outside from Dhaka. That’s why we are trying to give them a platform from where they can find the perfect hostel for them easily. It’s true that, there are some websites and Facebook groups available for this house rent purpose. But these platforms are not dedicated for students’ welfare and this is why we have come forward to make this happen.
 
 <br />
-Demonstration video: https://drive.google.com/file/d/1BU_SKluawiPDMtkcKSI-Ubapnev3UN7a/view?usp=sharing <br />
-
-
-<br />
 <font size="1"> Features of 'Hostel Chai?' : </font> <br /> 
 &nbsp; 1. User authentication assurance <br />
 &nbsp; 2. Hostel description <br />
